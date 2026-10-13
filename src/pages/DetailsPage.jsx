@@ -1,12 +1,8 @@
 import { useState, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApplicationStore } from '../store/applicationStore'
-import ProgressBar from '../components/ProgressBar'
-import Footer from '../components/Footer'
-import {
-  Sparkles, Check, Plus, Trash2, ArrowRight, ArrowLeft,
-  User, GraduationCap, Briefcase, Award, Globe, Save
-} from 'lucide-react'
+import { useUiStore } from '../store/uiStore'
+import PortalLayout from '../components/PortalLayout'
 
 const PROVINCES = [
   'Gauteng', 'Western Cape', 'KwaZulu-Natal', 'Eastern Cape',
@@ -16,6 +12,7 @@ const PROVINCES = [
 export default function DetailsPage() {
   const navigate = useNavigate()
   const { application, updateDetails, setStep } = useApplicationStore()
+  const shuffleNavigate = useUiStore(s => s.shuffleNavigate)
 
   const [details, setLocalDetails] = useState({ ...application.details })
   const [editedFields, setEditedFields] = useState({})
@@ -82,13 +79,11 @@ export default function DetailsPage() {
     handleChange('experience', updated)
   }
 
-  // Calculate total years of experience
   const totalYearsExp = useMemo(() => {
     if (!details.experience?.length) return 0
-    return details.experience.length * 2.5 // approximate or derived
+    return details.experience.length * 2.5
   }, [details.experience])
 
-  // Skills & Languages tag management
   const addSkill = (e) => {
     e.preventDefault()
     if (!newSkill.trim()) return
@@ -118,433 +113,420 @@ export default function DetailsPage() {
   const handleNext = (e) => {
     e.preventDefault()
     setStep(2)
-    navigate('/apply/documents')
+    shuffleNavigate(navigate, '/apply/documents', 'forward')
   }
 
   return (
-    <div className="bg-gradient-portal flex flex-col min-h-screen">
-      <div className="flex-1 max-w-4xl w-full mx-auto p-4 md:py-8">
-        <div className="bg-white rounded-card shadow-xl p-6 md:p-8 animate-fade-in">
-          <ProgressBar currentStep={1} />
+    <PortalLayout
+      category="STEP 02 OF 05 — PROFILE CURATION"
+      title="Review and curate your professional dossier"
+      subtitle="Verify auto-filled employment history, educational credentials, and core competencies extracted from your CV."
+      currentStep={1}
+      showProgressBar={true}
+    >
+      <div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-5 pb-3 border-b border-slate-200">
+          <div>
+            <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block">
+              Section 02 of 05 — Comprehensive Profile
+            </span>
+            <h2 className="formal-heading-dark text-2xl sm:text-3xl font-semibold mt-0.5">
+              Review and Edit Details
+            </h2>
+          </div>
+          <span className="text-[11px] font-medium text-slate-500 bg-slate-100 px-2.5 py-1 border border-slate-200 self-start sm:self-auto">
+            {lastSaved}
+          </span>
+        </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-            <div>
-              <h1 className="text-page-title text-gray-900">Review & Edit Details</h1>
-              <div className="gray-dash mt-2 mb-2" />
-            </div>
-            <div className="flex items-center gap-1.5 text-xs text-green-700 bg-green-50 px-3 py-1.5 rounded-full border border-green-200">
-              <Save className="w-3.5 h-3.5" />
-              <span>{lastSaved}</span>
+        {/* Minimal info banner */}
+        <div className="mb-6 p-3 bg-slate-50 border border-slate-200 text-xs text-slate-600">
+          <strong>Pre-populated from CV:</strong> Values extracted from your document are pre-filled below. Review every field and amend where necessary.
+        </div>
+
+        <form onSubmit={handleNext} className="space-y-6">
+          {/* 1. Personal Information */}
+          <div className="border border-slate-200 p-4 sm:p-5 bg-white">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-3 pb-2 border-b border-slate-100">
+              1. Personal Information
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <div>
+                <label className="input-label" htmlFor="firstName">First Name *</label>
+                <input
+                  id="firstName"
+                  type="text"
+                  value={details.firstName || ''}
+                  onChange={e => handleChange('firstName', e.target.value)}
+                  required
+                  className="input-field"
+                />
+              </div>
+
+              <div>
+                <label className="input-label" htmlFor="surname">Surname *</label>
+                <input
+                  id="surname"
+                  type="text"
+                  value={details.surname || ''}
+                  onChange={e => handleChange('surname', e.target.value)}
+                  required
+                  className="input-field"
+                />
+              </div>
+
+              <div>
+                <label className="input-label" htmlFor="emailReadonly">Email Address (Verified)</label>
+                <input
+                  id="emailReadonly"
+                  type="email"
+                  value={details.email || ''}
+                  readOnly
+                  className="input-field bg-slate-100 text-slate-500 cursor-not-allowed"
+                />
+              </div>
+
+              <div>
+                <label className="input-label" htmlFor="mobile">Mobile Number (SA) *</label>
+                <input
+                  id="mobile"
+                  type="tel"
+                  value={details.mobile || ''}
+                  onChange={e => handleChange('mobile', e.target.value)}
+                  placeholder="+27 82 123 4567"
+                  required
+                  className="input-field"
+                />
+              </div>
+
+              <div>
+                <label className="input-label" htmlFor="city">City / Town *</label>
+                <input
+                  id="city"
+                  type="text"
+                  value={details.city || ''}
+                  onChange={e => handleChange('city', e.target.value)}
+                  placeholder="e.g. Johannesburg"
+                  required
+                  className="input-field"
+                />
+              </div>
+
+              <div>
+                <label className="input-label" htmlFor="province">Province *</label>
+                <select
+                  id="province"
+                  value={details.province || ''}
+                  onChange={e => handleChange('province', e.target.value)}
+                  required
+                  className="input-field bg-white"
+                >
+                  <option value="">Select Province</option>
+                  {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
+                </select>
+              </div>
+
+              <div>
+                <label className="input-label" htmlFor="nationality">Nationality</label>
+                <input
+                  id="nationality"
+                  type="text"
+                  value={details.nationality || 'South African'}
+                  onChange={e => handleChange('nationality', e.target.value)}
+                  className="input-field"
+                />
+              </div>
+
+              <div>
+                <label className="input-label" htmlFor="idNumber">SA ID Number / Passport</label>
+                <input
+                  id="idNumber"
+                  type="text"
+                  value={details.idNumber || ''}
+                  onChange={e => handleChange('idNumber', e.target.value)}
+                  placeholder="13-digit SA ID number"
+                  className="input-field"
+                />
+              </div>
             </div>
           </div>
 
-          {/* Auto-filled top banner */}
-          <div className="mb-6 p-4 rounded-xl bg-blue-50 border border-blue-200 flex items-start gap-3">
-            <Sparkles className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-            <div className="text-xs text-blue-900 leading-relaxed">
-              <strong>Pre-populated from CV:</strong> We've extracted your background details. Blue badges mark auto-filled values. You can review, correct, or add anything missing below.
-            </div>
-          </div>
-
-          <form onSubmit={handleNext} className="space-y-8">
-            {/* 1. Personal Details Card */}
-            <div className="border border-gray-200 rounded-2xl p-5 md:p-6 shadow-sm">
-              <div className="flex items-center gap-2 mb-4 pb-3 border-b border-gray-100">
-                <User className="w-5 h-5 text-blue-700" />
-                <h2 className="text-section-title text-gray-900">Personal Information</h2>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="input-label mb-0" htmlFor="firstName">First Name *</label>
-                    {!editedFields.firstName && details.firstName && (
-                      <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded font-medium">Auto-filled</span>
-                    )}
-                  </div>
-                  <input
-                    id="firstName"
-                    type="text"
-                    value={details.firstName || ''}
-                    onChange={e => handleChange('firstName', e.target.value)}
-                    required
-                    className="input-field"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="input-label mb-0" htmlFor="surname">Surname *</label>
-                    {!editedFields.surname && details.surname && (
-                      <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded font-medium">Auto-filled</span>
-                    )}
-                  </div>
-                  <input
-                    id="surname"
-                    type="text"
-                    value={details.surname || ''}
-                    onChange={e => handleChange('surname', e.target.value)}
-                    required
-                    className="input-field"
-                  />
-                </div>
-
-                <div>
-                  <label className="input-label" htmlFor="emailReadonly">Email Address (Verified)</label>
-                  <input
-                    id="emailReadonly"
-                    type="email"
-                    value={details.email || ''}
-                    readOnly
-                    className="input-field bg-gray-100 text-gray-500 cursor-not-allowed"
-                  />
-                </div>
-
-                <div>
-                  <div className="flex items-center justify-between mb-1">
-                    <label className="input-label mb-0" htmlFor="mobile">Mobile Number (SA) *</label>
-                    {!editedFields.mobile && details.mobile && (
-                      <span className="text-[10px] bg-blue-100 text-blue-700 px-1.5 py-0.2 rounded font-medium">Auto-filled</span>
-                    )}
-                  </div>
-                  <input
-                    id="mobile"
-                    type="tel"
-                    value={details.mobile || ''}
-                    onChange={e => handleChange('mobile', e.target.value)}
-                    placeholder="+27 82 123 4567"
-                    required
-                    className="input-field"
-                  />
-                </div>
-
-                <div>
-                  <label className="input-label" htmlFor="city">City / Town *</label>
-                  <input
-                    id="city"
-                    type="text"
-                    value={details.city || ''}
-                    onChange={e => handleChange('city', e.target.value)}
-                    placeholder="e.g. Johannesburg"
-                    required
-                    className="input-field"
-                  />
-                </div>
-
-                <div>
-                  <label className="input-label" htmlFor="province">Province *</label>
-                  <select
-                    id="province"
-                    value={details.province || ''}
-                    onChange={e => handleChange('province', e.target.value)}
-                    required
-                    className="input-field bg-white"
-                  >
-                    <option value="">Select Province</option>
-                    {PROVINCES.map(p => <option key={p} value={p}>{p}</option>)}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="input-label" htmlFor="nationality">Nationality</label>
-                  <input
-                    id="nationality"
-                    type="text"
-                    value={details.nationality || 'South African'}
-                    onChange={e => handleChange('nationality', e.target.value)}
-                    className="input-field"
-                  />
-                </div>
-
-                <div>
-                  <label className="input-label" htmlFor="idNumber">SA ID Number / Passport</label>
-                  <input
-                    id="idNumber"
-                    type="text"
-                    value={details.idNumber || ''}
-                    onChange={e => handleChange('idNumber', e.target.value)}
-                    placeholder="13-digit SA ID number"
-                    className="input-field"
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Education Card */}
-            <div className="border border-gray-200 rounded-2xl p-5 md:p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <GraduationCap className="w-5 h-5 text-blue-700" />
-                  <h2 className="text-section-title text-gray-900">Education & Qualifications</h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={addEducation}
-                  className="btn-ghost flex items-center gap-1.5 text-xs py-1.5 px-3"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Qualification</span>
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {(details.education || []).map((edu, idx) => (
-                  <div key={edu.id || idx} className="p-4 bg-gray-50/70 border border-gray-200 rounded-xl relative group">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                      <div>
-                        <label className="input-label text-xs">Qualification *</label>
-                        <input
-                          type="text"
-                          value={edu.qualification}
-                          onChange={e => updateEducationItem(idx, 'qualification', e.target.value)}
-                          placeholder="e.g. BCom Information Systems"
-                          required
-                          className="input-field text-sm py-2"
-                        />
-                      </div>
-                      <div>
-                        <label className="input-label text-xs">Institution *</label>
-                        <input
-                          type="text"
-                          value={edu.institution}
-                          onChange={e => updateEducationItem(idx, 'institution', e.target.value)}
-                          placeholder="e.g. University of Pretoria"
-                          required
-                          className="input-field text-sm py-2"
-                        />
-                      </div>
-                      <div>
-                        <label className="input-label text-xs">Field of Study</label>
-                        <input
-                          type="text"
-                          value={edu.fieldOfStudy}
-                          onChange={e => updateEducationItem(idx, 'fieldOfStudy', e.target.value)}
-                          placeholder="e.g. Computer Science"
-                          className="input-field text-sm py-2"
-                        />
-                      </div>
-                      <div className="flex items-end gap-2">
-                        <div className="flex-1">
-                          <label className="input-label text-xs">Year Completed</label>
-                          <input
-                            type="text"
-                            value={edu.yearCompleted}
-                            onChange={e => updateEducationItem(idx, 'yearCompleted', e.target.value)}
-                            placeholder="e.g. 2021"
-                            className="input-field text-sm py-2"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeEducationItem(idx)}
-                          className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg mb-0.5"
-                          title="Delete qualification"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 3. Work Experience Card */}
-            <div className="border border-gray-200 rounded-2xl p-5 md:p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-100">
-                <div className="flex items-center gap-2">
-                  <Briefcase className="w-5 h-5 text-blue-700" />
-                  <h2 className="text-section-title text-gray-900">Work Experience</h2>
-                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-medium ml-2">
-                    ~{Math.round(totalYearsExp)} yrs experience
-                  </span>
-                </div>
-                <button
-                  type="button"
-                  onClick={addExperience}
-                  className="btn-ghost flex items-center gap-1.5 text-xs py-1.5 px-3"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add Role</span>
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {(details.experience || []).map((exp, idx) => (
-                  <div key={exp.id || idx} className="p-4 bg-gray-50/70 border border-gray-200 rounded-xl space-y-3">
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
-                      <div>
-                        <label className="input-label text-xs">Job Title *</label>
-                        <input
-                          type="text"
-                          value={exp.jobTitle}
-                          onChange={e => updateExperienceItem(idx, 'jobTitle', e.target.value)}
-                          placeholder="e.g. Senior Analyst"
-                          required
-                          className="input-field text-sm py-2"
-                        />
-                      </div>
-                      <div>
-                        <label className="input-label text-xs">Company *</label>
-                        <input
-                          type="text"
-                          value={exp.company}
-                          onChange={e => updateExperienceItem(idx, 'company', e.target.value)}
-                          placeholder="e.g. Standard Bank"
-                          required
-                          className="input-field text-sm py-2"
-                        />
-                      </div>
-                      <div>
-                        <label className="input-label text-xs">Start Date</label>
-                        <input
-                          type="text"
-                          value={exp.startDate}
-                          onChange={e => updateExperienceItem(idx, 'startDate', e.target.value)}
-                          placeholder="YYYY-MM"
-                          className="input-field text-sm py-2"
-                        />
-                      </div>
-                      <div className="flex items-end gap-2">
-                        <div className="flex-1">
-                          <label className="input-label text-xs">End Date</label>
-                          <input
-                            type="text"
-                            value={exp.current ? 'Present' : exp.endDate}
-                            onChange={e => updateExperienceItem(idx, 'endDate', e.target.value)}
-                            placeholder="YYYY-MM or Present"
-                            disabled={exp.current}
-                            className="input-field text-sm py-2 disabled:bg-gray-100"
-                          />
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => removeExperienceItem(idx)}
-                          className="p-2 text-gray-400 hover:text-red-600 transition-colors rounded-lg mb-0.5"
-                          title="Delete role"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    </div>
-
-                    <div>
-                      <label className="input-label text-xs">Key Responsibilities</label>
-                      <textarea
-                        rows={2}
-                        value={exp.responsibilities}
-                        onChange={e => updateExperienceItem(idx, 'responsibilities', e.target.value)}
-                        placeholder="Highlight your key achievements and duties..."
-                        className="input-field text-sm py-2"
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* 4. Skills & Languages Card */}
-            <div className="border border-gray-200 rounded-2xl p-5 md:p-6 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Skills */}
-              <div>
-                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
-                  <Award className="w-4 h-4 text-blue-700" />
-                  <h3 className="font-semibold text-gray-900 text-sm">Key Skills</h3>
-                </div>
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {(details.skills || []).map(skill => (
-                    <span
-                      key={skill}
-                      className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-800 text-xs px-2.5 py-1 rounded-full border border-blue-200"
-                    >
-                      <span>{skill}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeSkill(skill)}
-                        className="text-blue-500 hover:text-red-600 font-bold"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newSkill}
-                    onChange={e => setNewSkill(e.target.value)}
-                    placeholder="Add a skill (e.g. Python)"
-                    className="input-field text-xs py-2"
-                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill(e))}
-                  />
-                  <button type="button" onClick={addSkill} className="btn-secondary text-xs px-3 py-2">
-                    Add
-                  </button>
-                </div>
-              </div>
-
-              {/* Languages */}
-              <div>
-                <div className="flex items-center gap-2 mb-3 pb-2 border-b border-gray-100">
-                  <Globe className="w-4 h-4 text-blue-700" />
-                  <h3 className="font-semibold text-gray-900 text-sm">Languages</h3>
-                </div>
-                <div className="flex flex-wrap gap-1.5 mb-3">
-                  {(details.languages || []).map(lang => (
-                    <span
-                      key={lang}
-                      className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-800 text-xs px-2.5 py-1 rounded-full border border-gray-200"
-                    >
-                      <span>{lang}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeLanguage(lang)}
-                        className="text-gray-400 hover:text-red-600 font-bold"
-                      >
-                        ×
-                      </button>
-                    </span>
-                  ))}
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newLanguage}
-                    onChange={e => setNewLanguage(e.target.value)}
-                    placeholder="Add a language (e.g. English)"
-                    className="input-field text-xs py-2"
-                    onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addLanguage(e))}
-                  />
-                  <button type="button" onClick={addLanguage} className="btn-secondary text-xs px-3 py-2">
-                    Add
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Back & Next Navigation */}
-            <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
+          {/* 2. Education & Qualifications */}
+          <div className="border border-slate-200 p-4 sm:p-5 bg-white">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                2. Education & Qualifications
+              </h3>
               <button
                 type="button"
-                onClick={() => { setStep(0); navigate('/apply/cv') }}
-                className="btn-secondary flex items-center gap-2"
+                onClick={addEducation}
+                className="text-[11px] uppercase font-bold text-slate-700 hover:text-slate-900 border border-slate-300 px-2.5 py-1"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
-              </button>
-
-              <button
-                type="submit"
-                className="btn-primary flex items-center gap-2"
-              >
-                <span>Next: Supporting Documents</span>
-                <ArrowRight className="w-4 h-4" />
+                + Add Qualification
               </button>
             </div>
-          </form>
-        </div>
+
+            <div className="space-y-3">
+              {(details.education || []).map((edu, idx) => (
+                <div key={edu.id || idx} className="p-3 bg-slate-50 border border-slate-200">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    <div>
+                      <label className="input-label text-[10px]">Qualification *</label>
+                      <input
+                        type="text"
+                        value={edu.qualification}
+                        onChange={e => updateEducationItem(idx, 'qualification', e.target.value)}
+                        placeholder="e.g. BCom Information Systems"
+                        required
+                        className="input-field text-xs py-1.5"
+                      />
+                    </div>
+                    <div>
+                      <label className="input-label text-[10px]">Institution *</label>
+                      <input
+                        type="text"
+                        value={edu.institution}
+                        onChange={e => updateEducationItem(idx, 'institution', e.target.value)}
+                        placeholder="e.g. University of Pretoria"
+                        required
+                        className="input-field text-xs py-1.5"
+                      />
+                    </div>
+                    <div>
+                      <label className="input-label text-[10px]">Field of Study</label>
+                      <input
+                        type="text"
+                        value={edu.fieldOfStudy}
+                        onChange={e => updateEducationItem(idx, 'fieldOfStudy', e.target.value)}
+                        placeholder="e.g. Commerce"
+                        className="input-field text-xs py-1.5"
+                      />
+                    </div>
+                    <div className="flex items-end gap-2">
+                      <div className="flex-1">
+                        <label className="input-label text-[10px]">Year</label>
+                        <input
+                          type="text"
+                          value={edu.yearCompleted}
+                          onChange={e => updateEducationItem(idx, 'yearCompleted', e.target.value)}
+                          placeholder="e.g. 2021"
+                          className="input-field text-xs py-1.5"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeEducationItem(idx)}
+                        className="text-xs text-red-600 hover:text-red-800 p-2 font-bold"
+                        title="Delete qualification"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 3. Work Experience */}
+          <div className="border border-slate-200 p-4 sm:p-5 bg-white">
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900">
+                  3. Work Experience
+                </h3>
+                <span className="text-[10px] bg-slate-100 text-slate-700 px-2 py-0.5 border border-slate-200 font-medium">
+                  ~{Math.round(totalYearsExp)} yrs experience
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={addExperience}
+                className="text-[11px] uppercase font-bold text-slate-700 hover:text-slate-900 border border-slate-300 px-2.5 py-1"
+              >
+                + Add Role
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              {(details.experience || []).map((exp, idx) => (
+                <div key={exp.id || idx} className="p-3 bg-slate-50 border border-slate-200 space-y-2.5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    <div>
+                      <label className="input-label text-[10px]">Job Title *</label>
+                      <input
+                        type="text"
+                        value={exp.jobTitle}
+                        onChange={e => updateExperienceItem(idx, 'jobTitle', e.target.value)}
+                        placeholder="e.g. Senior Analyst"
+                        required
+                        className="input-field text-xs py-1.5"
+                      />
+                    </div>
+                    <div>
+                      <label className="input-label text-[10px]">Company *</label>
+                      <input
+                        type="text"
+                        value={exp.company}
+                        onChange={e => updateExperienceItem(idx, 'company', e.target.value)}
+                        placeholder="e.g. Standard Bank"
+                        required
+                        className="input-field text-xs py-1.5"
+                      />
+                    </div>
+                    <div>
+                      <label className="input-label text-[10px]">Start Date</label>
+                      <input
+                        type="text"
+                        value={exp.startDate}
+                        onChange={e => updateExperienceItem(idx, 'startDate', e.target.value)}
+                        placeholder="YYYY-MM"
+                        className="input-field text-xs py-1.5"
+                      />
+                    </div>
+                    <div className="flex items-end gap-2">
+                      <div className="flex-1">
+                        <label className="input-label text-[10px]">End Date</label>
+                        <input
+                          type="text"
+                          value={exp.current ? 'Present' : exp.endDate}
+                          onChange={e => updateExperienceItem(idx, 'endDate', e.target.value)}
+                          placeholder="YYYY-MM"
+                          disabled={exp.current}
+                          className="input-field text-xs py-1.5 disabled:bg-slate-100"
+                        />
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => removeExperienceItem(idx)}
+                        className="text-xs text-red-600 hover:text-red-800 p-2 font-bold"
+                        title="Delete role"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="input-label text-[10px]">Key Responsibilities</label>
+                    <textarea
+                      rows={2}
+                      value={exp.responsibilities}
+                      onChange={e => updateExperienceItem(idx, 'responsibilities', e.target.value)}
+                      placeholder="Outline core responsibilities and achievements..."
+                      className="input-field text-xs py-1.5"
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* 4. Skills & Languages */}
+          <div className="border border-slate-200 p-4 sm:p-5 bg-white grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-2 pb-1 border-b border-slate-100">
+                Key Skills
+              </h3>
+              <div className="flex flex-wrap gap-1 mb-2.5">
+                {(details.skills || []).map(skill => (
+                  <span
+                    key={skill}
+                    className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-800 text-xs px-2 py-0.5 border border-slate-300"
+                  >
+                    <span>{skill}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeSkill(skill)}
+                      className="text-slate-400 hover:text-red-600 font-bold"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newSkill}
+                  onChange={e => setNewSkill(e.target.value)}
+                  placeholder="Add skill (e.g. Risk Modeling)"
+                  className="input-field text-xs py-1.5"
+                  onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addSkill(e))}
+                />
+                <button
+                  type="button"
+                  onClick={addSkill}
+                  className="border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs px-3 py-1 font-semibold uppercase tracking-wider"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 mb-2 pb-1 border-b border-slate-100">
+                Languages
+              </h3>
+              <div className="flex flex-wrap gap-1 mb-2.5">
+                {(details.languages || []).map(lang => (
+                  <span
+                    key={lang}
+                    className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-800 text-xs px-2 py-0.5 border border-slate-300"
+                  >
+                    <span>{lang}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeLanguage(lang)}
+                      className="text-slate-400 hover:text-red-600 font-bold"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newLanguage}
+                  onChange={e => setNewLanguage(e.target.value)}
+                  placeholder="Add language (e.g. English)"
+                  className="input-field text-xs py-1.5"
+                  onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addLanguage(e))}
+                />
+                <button
+                  type="button"
+                  onClick={addLanguage}
+                  className="border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 text-xs px-3 py-1 font-semibold uppercase tracking-wider"
+                >
+                  Add
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation Buttons: unrounded rectangular, with next-step transition */}
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => { setStep(0); shuffleNavigate(navigate, '/apply/cv', 'backward') }}
+              className="border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 py-2.5 px-5 font-semibold text-xs uppercase tracking-wider rounded-none"
+              style={{ borderRadius: 0 }}
+            >
+              ← Back to CV
+            </button>
+
+            <button
+              type="submit"
+              className="bg-[#0f1b29] hover:bg-[#1a2d42] text-white py-3 px-6 font-semibold text-xs uppercase tracking-wider transition-all duration-150 rounded-none shadow-sm"
+              style={{ borderRadius: 0 }}
+            >
+              Next: Supporting Documents →
+            </button>
+          </div>
+        </form>
       </div>
-      <Footer />
-    </div>
+    </PortalLayout>
   )
 }

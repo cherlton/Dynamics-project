@@ -28,7 +28,7 @@ export default function DevToolbar() {
 
   return (
     <div className="fixed bottom-4 left-4 z-50 font-sans text-xs">
-      <div className="bg-gray-900 text-white rounded-xl shadow-2xl border border-gray-700 overflow-hidden transition-all duration-200">
+      <div className="bg-[#0f1b29] text-white shadow-2xl border border-slate-700 overflow-hidden transition-all duration-200 rounded-none" style={{ borderRadius: 0 }}>
         <div className="flex items-center justify-between px-3 py-2 bg-gray-800 border-b border-gray-700 cursor-pointer select-none"
              onClick={() => setCollapsed(!collapsed)}>
           <div className="flex items-center gap-2">

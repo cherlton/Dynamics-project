@@ -1,5 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { Shield, ArrowLeft } from 'lucide-react'
+import Header from '../components/Header'
 import Footer from '../components/Footer'
 
 export default function LegalPage() {
@@ -39,7 +40,7 @@ export default function LegalPage() {
           </p>
           <h3 className="font-bold text-gray-900 text-base pt-2">1. Responsible Party & Information Officer</h3>
           <p>
-            The responsible party is the hiring organization. For queries or to exercise statutory privacy rights, contact our appointed Information Officer at: <a href="mailto:info.officer@company.co.za" className="text-blue-700 font-semibold underline">info.officer@company.co.za</a>.
+            The responsible party is Dynamics Recruitment (Pty) Ltd. For queries or to exercise statutory privacy rights, contact our appointed Information Officer at: <a href="mailto:popia@dynamics.co.za" className="text-slate-900 font-semibold underline">popia@dynamics.co.za</a>.
           </p>
           <h3 className="font-bold text-gray-900 text-base pt-2">2. Personal Information Collected</h3>
           <p>
@@ -84,26 +85,26 @@ export default function LegalPage() {
   const page = contentMap[slug] || contentMap.privacy
 
   return (
-    <div className="bg-gray-50 flex flex-col min-h-screen font-sans">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-xs font-semibold text-gray-600 hover:text-blue-700">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Return to Portal</span>
+    <div className="bg-slate-50 flex flex-col min-h-screen font-sans text-slate-900">
+      <Header />
+
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between text-xs">
+          <Link to="/" className="font-semibold text-slate-700 hover:text-slate-900 underline">
+            ← Return to Portal
           </Link>
-          <div className="flex items-center gap-2">
-            <Shield className="w-5 h-5 text-blue-700" />
-            <span className="font-bold text-sm text-gray-900">Legal Compliance</span>
-          </div>
+          <span className="font-bold uppercase tracking-wider text-slate-900">
+            Legal & Statutory Compliance
+          </span>
         </div>
-      </header>
+      </div>
 
       <main className="flex-1 max-w-4xl w-full mx-auto p-4 md:py-10">
-        <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6 md:p-10 space-y-6">
+        <div className="bg-white border border-slate-200 shadow-sm p-6 md:p-10 space-y-6 rounded-none" style={{ borderRadius: 0 }}>
           <div>
-            <span className="text-xs font-bold text-blue-700 uppercase tracking-wider">Governance Documentation</span>
-            <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mt-1">{page.title}</h1>
-            <p className="text-xs text-gray-400 mt-1">{page.subtitle}</p>
+            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">Governance Documentation</span>
+            <h1 className="formal-heading-dark text-2xl md:text-3xl font-semibold mt-1">{page.title}</h1>
+            <p className="text-xs text-slate-400 mt-1">{page.subtitle}</p>
             <div className="gray-dash mt-3 mb-6" />
           </div>
 

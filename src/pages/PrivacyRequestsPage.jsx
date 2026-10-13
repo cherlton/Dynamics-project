@@ -2,12 +2,9 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { useApplicationStore } from '../store/applicationStore'
+import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Modal from '../components/Modal'
-import {
-  ShieldCheck, Download, Trash2, Edit3, ArrowLeft, CheckCircle2,
-  AlertTriangle, Lock, FileText, Check
-} from 'lucide-react'
 
 export default function PrivacyRequestsPage() {
   const navigate = useNavigate()
@@ -80,49 +77,53 @@ export default function PrivacyRequestsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
-          <Link to="/portal" className="flex items-center gap-2 text-xs font-semibold text-gray-700 hover:text-blue-700">
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Candidate Portal</span>
-          </Link>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-blue-700" />
-            <span className="font-bold text-sm text-gray-900">POPIA Privacy Rights Hub</span>
-          </div>
-        </div>
-      </header>
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900">
+      <Header />
 
-      <main className="flex-1 max-w-4xl w-full mx-auto p-4 md:py-8 space-y-6">
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between text-xs">
+          <Link to="/portal" className="font-semibold text-slate-700 hover:text-slate-900 underline">
+            ← Back to Candidate Portal
+          </Link>
+          <span className="font-bold uppercase tracking-wider text-slate-900">
+            POPIA Statutory Rights Hub (Act 4 of 2013)
+          </span>
+        </div>
+      </div>
+
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:px-6 lg:px-8 py-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Your Data Privacy & Rights</h1>
-          <p className="text-xs text-gray-500 mt-1">
-            Governed by South Africa's Protection of Personal Information Act 4 of 2013 (POPIA).
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block mb-1">
+            Data Subject Governance
+          </span>
+          <h1 className="formal-heading-dark text-2xl sm:text-3xl font-semibold">
+            Your Personal Data Privacy & Statutory Rights
+          </h1>
+          <p className="text-xs text-slate-500 mt-1">
+            Governed by South Africa's Protection of Personal Information Act (POPIA). You hold full sovereignty over your candidate dossier.
           </p>
         </div>
 
         {successMsg && (
-          <div className="p-4 rounded-xl bg-green-50 border border-green-200 text-xs text-green-800 flex items-center gap-2 animate-slide-up">
-            <CheckCircle2 className="w-4 h-4 text-green-600 flex-shrink-0" />
-            <span>{successMsg}</span>
+          <div className="p-3.5 bg-emerald-50 border border-emerald-300 text-xs text-emerald-900 font-medium">
+            {successMsg}
           </div>
         )}
 
         {/* 1. Consent Preferences */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
+        <div className="bg-white p-6 border border-slate-200 shadow-sm space-y-4">
+          <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100">
             1. Consent Management
           </h2>
-          <p className="text-xs text-gray-500">
+          <p className="text-xs text-slate-500">
             You may adjust your optional consents at any time without impacting your ongoing application.
           </p>
 
-          <div className="space-y-4 pt-2">
-            <div className="flex items-start justify-between gap-4 p-4 rounded-xl bg-gray-50 border border-gray-200">
+          <div className="space-y-3 pt-1">
+            <div className="flex items-start justify-between gap-4 p-3.5 bg-slate-50 border border-slate-200">
               <div>
-                <span className="font-semibold text-gray-900 text-xs block">Talent Pool Retention (12 Months)</span>
-                <span className="text-[11px] text-gray-500 block mt-0.5">
+                <span className="font-semibold text-slate-900 text-xs block">Talent Pool Retention (12 Months)</span>
+                <span className="text-[11px] text-slate-500 block mt-0.5">
                   Allows our recruitment team to match your profile to future vacancies over the next 12 months.
                 </span>
               </div>
@@ -130,14 +131,15 @@ export default function PrivacyRequestsPage() {
                 type="checkbox"
                 checked={talentPool}
                 onChange={e => handleToggleTalentPool(e.target.checked)}
-                className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                className="mt-1 h-4 w-4 border-slate-300 text-[#0f1b29] focus:ring-0 cursor-pointer"
+                style={{ borderRadius: 0 }}
               />
             </div>
 
-            <div className="flex items-start justify-between gap-4 p-4 rounded-xl bg-gray-50 border border-gray-200">
+            <div className="flex items-start justify-between gap-4 p-3.5 bg-slate-50 border border-slate-200">
               <div>
-                <span className="font-semibold text-gray-900 text-xs block">Vacancy Notifications & Direct Communication</span>
-                <span className="text-[11px] text-gray-500 block mt-0.5">
+                <span className="font-semibold text-slate-900 text-xs block">Vacancy Notifications & Direct Communication</span>
+                <span className="text-[11px] text-slate-500 block mt-0.5">
                   Receive alerts when roles aligned to your skills become available.
                 </span>
               </div>
@@ -145,68 +147,72 @@ export default function PrivacyRequestsPage() {
                 type="checkbox"
                 checked={marketing}
                 onChange={e => handleToggleMarketing(e.target.checked)}
-                className="mt-1 h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                className="mt-1 h-4 w-4 border-slate-300 text-[#0f1b29] focus:ring-0 cursor-pointer"
+                style={{ borderRadius: 0 }}
               />
             </div>
           </div>
         </div>
 
         {/* 2. Data Subject Rights (Section 23, 24, 25) */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
+        <div className="bg-white p-6 border border-slate-200 shadow-sm space-y-4">
+          <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider pb-2 border-b border-slate-100">
             2. POPIA Statutory Rights
           </h2>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
             {/* Download Data */}
-            <div className="p-4 rounded-xl border border-gray-200 flex flex-col justify-between space-y-3 bg-gray-50/50">
+            <div className="p-4 border border-slate-200 flex flex-col justify-between space-y-3 bg-slate-50">
               <div>
-                <Download className="w-5 h-5 text-blue-700 mb-2" />
-                <h3 className="text-xs font-bold text-gray-900">Right of Access (Section 23)</h3>
-                <p className="text-[11px] text-gray-500 mt-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Section 23</span>
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Right of Access</h3>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
                   Obtain a complete portable copy of all data and documents we hold about you.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleExportData}
-                className="btn-secondary text-xs py-2 w-full"
+                className="border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold uppercase tracking-wider py-2.5 w-full"
+                style={{ borderRadius: 0 }}
               >
                 Export JSON Archive
               </button>
             </div>
 
             {/* Request Correction */}
-            <div className="p-4 rounded-xl border border-gray-200 flex flex-col justify-between space-y-3 bg-gray-50/50">
+            <div className="p-4 border border-slate-200 flex flex-col justify-between space-y-3 bg-slate-50">
               <div>
-                <Edit3 className="w-5 h-5 text-blue-700 mb-2" />
-                <h3 className="text-xs font-bold text-gray-900">Correction (Section 24)</h3>
-                <p className="text-[11px] text-gray-500 mt-1">
+                <span className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Section 24</span>
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider">Data Rectification</h3>
+                <p className="text-[11px] text-slate-500 mt-1 leading-relaxed">
                   Request updates or rectifications to any inaccurate, outdated, or incomplete data.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setCorrectModal(true)}
-                className="btn-secondary text-xs py-2 w-full"
+                className="border border-slate-300 bg-white hover:bg-slate-100 text-slate-800 text-xs font-semibold uppercase tracking-wider py-2.5 w-full"
+                style={{ borderRadius: 0 }}
               >
                 Submit Correction
               </button>
             </div>
 
             {/* Withdraw & Deletion */}
-            <div className="p-4 rounded-xl border border-red-200 bg-red-50/30 flex flex-col justify-between space-y-3">
+            <div className="p-4 border border-red-200 bg-red-50/40 flex flex-col justify-between space-y-3">
               <div>
-                <Trash2 className="w-5 h-5 text-red-600 mb-2" />
-                <h3 className="text-xs font-bold text-red-900">Withdraw / Erasure</h3>
-                <p className="text-[11px] text-gray-500 mt-1">
+                <span className="text-[10px] uppercase font-bold text-red-700 block mb-1">Section 14</span>
+                <h3 className="text-xs font-bold text-red-900 uppercase tracking-wider">Withdraw / Erasure</h3>
+                <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
                   Withdraw this application and request complete deletion or anonymization.
                 </p>
               </div>
               <button
                 type="button"
                 onClick={() => setWithdrawModal(true)}
-                className="btn-danger text-xs py-2 w-full"
+                className="bg-red-700 hover:bg-red-800 text-white text-xs font-semibold uppercase tracking-wider py-2.5 w-full"
+                style={{ borderRadius: 0 }}
               >
                 Withdraw Application
               </button>
@@ -215,47 +221,47 @@ export default function PrivacyRequestsPage() {
         </div>
 
         {/* 3. Consent Audit Trail Record */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider">
+        <div className="bg-white p-6 border border-slate-200 shadow-sm space-y-4">
+          <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+            <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider">
               3. Audit Trail & Consent Ledger
             </h2>
-            <span className="text-[11px] text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-200">
+            <span className="text-[10px] text-emerald-800 bg-emerald-100 px-2 py-0.5 border border-emerald-200 uppercase font-bold tracking-wider">
               Legally Binding Log
             </span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="bg-gray-50 text-gray-500 border-y border-gray-200">
+              <thead className="bg-slate-50 text-slate-600 border-y border-slate-200">
                 <tr>
-                  <th className="py-2.5 px-3">Consent Instrument</th>
-                  <th className="py-2.5 px-3">Version</th>
-                  <th className="py-2.5 px-3">Status</th>
-                  <th className="py-2.5 px-3">Recorded Timestamp</th>
-                  <th className="py-2.5 px-3">IP Fingerprint</th>
+                  <th className="py-2.5 px-3 font-semibold uppercase text-[10px] tracking-wider">Consent Instrument</th>
+                  <th className="py-2.5 px-3 font-semibold uppercase text-[10px] tracking-wider">Version</th>
+                  <th className="py-2.5 px-3 font-semibold uppercase text-[10px] tracking-wider">Status</th>
+                  <th className="py-2.5 px-3 font-semibold uppercase text-[10px] tracking-wider">Recorded Timestamp</th>
+                  <th className="py-2.5 px-3 font-semibold uppercase text-[10px] tracking-wider">IP Fingerprint</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 text-gray-700">
+              <tbody className="divide-y divide-slate-100 text-slate-700">
                 <tr>
                   <td className="py-2.5 px-3 font-medium">Terms of Use</td>
                   <td className="py-2.5 px-3">v1.0 (2026)</td>
-                  <td className="py-2.5 px-3 text-green-700 font-semibold">Active</td>
-                  <td className="py-2.5 px-3 text-gray-500">12 Feb 2026, 09:14 SAST</td>
+                  <td className="py-2.5 px-3 text-emerald-800 font-semibold">Active</td>
+                  <td className="py-2.5 px-3 text-slate-500">12 Feb 2026, 09:14 SAST</td>
                   <td className="py-2.5 px-3 font-mono text-[11px]">196.25.1.***</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-3 font-medium">POPIA Privacy Notice</td>
                   <td className="py-2.5 px-3">v1.0 (2026)</td>
-                  <td className="py-2.5 px-3 text-green-700 font-semibold">Active</td>
-                  <td className="py-2.5 px-3 text-gray-500">12 Feb 2026, 09:14 SAST</td>
+                  <td className="py-2.5 px-3 text-emerald-800 font-semibold">Active</td>
+                  <td className="py-2.5 px-3 text-slate-500">12 Feb 2026, 09:14 SAST</td>
                   <td className="py-2.5 px-3 font-mono text-[11px]">196.25.1.***</td>
                 </tr>
                 <tr>
                   <td className="py-2.5 px-3 font-medium">ID Storage Consent</td>
                   <td className="py-2.5 px-3">v1.0 (2026)</td>
-                  <td className="py-2.5 px-3 text-green-700 font-semibold">Active</td>
-                  <td className="py-2.5 px-3 text-gray-500">12 Feb 2026, 09:18 SAST</td>
+                  <td className="py-2.5 px-3 text-emerald-800 font-semibold">Active</td>
+                  <td className="py-2.5 px-3 text-slate-500">12 Feb 2026, 09:18 SAST</td>
                   <td className="py-2.5 px-3 font-mono text-[11px]">196.25.1.***</td>
                 </tr>
               </tbody>
@@ -270,8 +276,8 @@ export default function PrivacyRequestsPage() {
         onClose={() => setCorrectModal(false)}
         title="Request Record Correction"
       >
-        <div className="space-y-4 text-xs">
-          <p className="text-gray-600">
+        <div className="space-y-3 text-xs text-slate-600">
+          <p>
             Please describe the personal details you would like updated or corrected:
           </p>
           <textarea
@@ -282,8 +288,20 @@ export default function PrivacyRequestsPage() {
             className="input-field text-xs"
           />
           <div className="flex justify-end gap-2 pt-2">
-            <button onClick={() => setCorrectModal(false)} className="btn-secondary text-xs">Cancel</button>
-            <button onClick={handleSubmitCorrection} className="btn-primary text-xs">Submit Request</button>
+            <button
+              onClick={() => setCorrectModal(false)}
+              className="border border-slate-300 px-4 py-2 font-semibold text-xs uppercase tracking-wider text-slate-800"
+              style={{ borderRadius: 0 }}
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmitCorrection}
+              className="bg-[#0f1b29] text-white px-4 py-2 font-semibold text-xs uppercase tracking-wider"
+              style={{ borderRadius: 0 }}
+            >
+              Submit Request
+            </button>
           </div>
         </div>
       </Modal>
@@ -295,15 +313,24 @@ export default function PrivacyRequestsPage() {
         title="Confirm Application Withdrawal"
       >
         <div className="space-y-4 text-xs">
-          <div className="p-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-2 text-red-800">
-            <AlertTriangle className="w-4 h-4 flex-shrink-0 mt-0.5 text-red-600" />
-            <div>
-              <strong>Irreversible Action:</strong> Withdrawing your application will immediately remove you from consideration for Senior Business Analyst. In accordance with POPIA Section 14, your records will be scheduled for permanent destruction.
-            </div>
+          <div className="p-3 bg-red-50 border border-red-300 text-red-900 leading-relaxed">
+            <strong>Irreversible Action:</strong> Withdrawing your application will immediately remove you from consideration for Senior Business Analyst. In accordance with POPIA Section 14, your records will be scheduled for permanent destruction.
           </div>
           <div className="flex justify-end gap-2 pt-2">
-            <button onClick={() => setWithdrawModal(false)} className="btn-secondary text-xs">Keep Application</button>
-            <button onClick={handleConfirmWithdraw} className="btn-danger text-xs">Confirm Withdrawal</button>
+            <button
+              onClick={() => setWithdrawModal(false)}
+              className="border border-slate-300 px-4 py-2 font-semibold text-xs uppercase tracking-wider text-slate-800"
+              style={{ borderRadius: 0 }}
+            >
+              Keep Application
+            </button>
+            <button
+              onClick={handleConfirmWithdraw}
+              className="bg-red-700 text-white px-4 py-2 font-semibold text-xs uppercase tracking-wider"
+              style={{ borderRadius: 0 }}
+            >
+              Confirm Withdrawal
+            </button>
           </div>
         </div>
       </Modal>

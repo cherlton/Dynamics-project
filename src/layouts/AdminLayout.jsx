@@ -3,8 +3,9 @@ import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import {
   LayoutDashboard, Users, Kanban, UserCheck, Briefcase, Shield,
-  LogOut, Bell, Search, ExternalLink, Menu, X, ChevronRight, Mail
+  LogOut, Bell, ExternalLink, Menu, X, ChevronRight, Mail
 } from 'lucide-react'
+import SystemLogo from '../components/SystemLogo'
 
 export default function AdminLayout() {
   const location = useLocation()
@@ -28,35 +29,29 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 flex font-sans">
+    <div className="min-h-screen bg-slate-100 flex font-sans text-slate-900">
       {/* Mobile Sidebar Backdrop */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          className="fixed inset-0 bg-[#0f1b29]/60 z-30 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}
 
-      {/* Deep Blue Left Sidebar */}
+      {/* Deep Navy Left Sidebar (Zero Rounded Corners) */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-[#0F2A6B] text-white flex flex-col transition-transform duration-200 ease-in-out ${
+        className={`fixed lg:static inset-y-0 left-0 z-40 w-64 bg-[#0f1b29] text-white flex flex-col transition-transform duration-200 ease-in-out border-r border-slate-800 ${
           sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
       >
         {/* Sidebar Brand Header */}
-        <div className="h-16 flex items-center justify-between px-6 border-b border-blue-900/60">
-          <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-bold text-white shadow-md">
-              RP
-            </div>
-            <div>
-              <span className="font-bold text-sm tracking-tight block">Talent Portal</span>
-              <span className="text-[10px] text-blue-300">Recruiter Admin v1.0</span>
-            </div>
-          </div>
+        <div className="h-16 flex items-center justify-between px-6 border-b border-slate-800">
+          <Link to="/" className="flex items-center">
+            <SystemLogo light={true} />
+          </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="lg:hidden text-blue-300 hover:text-white"
+            className="lg:hidden text-slate-400 hover:text-white"
           >
             <X className="w-5 h-5" />
           </button>
@@ -72,13 +67,14 @@ export default function AdminLayout() {
                 key={item.path}
                 to={item.path}
                 onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs font-medium transition-all ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 text-xs font-semibold uppercase tracking-wider transition-all rounded-none ${
                   isActive
-                    ? 'bg-blue-600 text-white shadow-md shadow-blue-900/30 font-semibold'
-                    : 'text-blue-200 hover:bg-blue-900/40 hover:text-white'
+                    ? 'bg-white text-[#0f1b29] font-bold'
+                    : 'text-slate-300 hover:bg-slate-800 hover:text-white'
                 }`}
+                style={{ borderRadius: 0 }}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-blue-300'}`} />
+                <Icon className={`w-4 h-4 ${isActive ? 'text-[#0f1b29]' : 'text-slate-400'}`} />
                 <span>{item.label}</span>
               </Link>
             )
@@ -86,19 +82,20 @@ export default function AdminLayout() {
         </nav>
 
         {/* Recruiter Profile & Logout */}
-        <div className="p-4 border-t border-blue-900/60 bg-blue-950/40">
+        <div className="p-4 border-t border-slate-800 bg-[#080f17]">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold text-xs">
+            <div className="w-8 h-8 border border-slate-700 bg-slate-800 text-white flex items-center justify-center font-bold text-xs">
               SJ
             </div>
             <div className="flex-1 min-w-0">
               <span className="text-xs font-semibold text-white block truncate">Sarah Johnson</span>
-              <span className="text-[10px] text-blue-300 block truncate">Talent Manager (Admin)</span>
+              <span className="text-[10px] text-slate-400 block truncate">Talent Partner (Admin)</span>
             </div>
           </div>
           <button
             onClick={handleLogout}
-            className="w-full flex items-center justify-center gap-2 py-2 rounded-lg text-xs text-blue-200 hover:bg-red-500/20 hover:text-red-200 transition-colors"
+            className="w-full flex items-center justify-center gap-2 py-2 text-xs font-semibold uppercase tracking-wider text-slate-300 hover:text-white hover:bg-slate-800 transition-colors rounded-none border border-slate-800"
+            style={{ borderRadius: 0 }}
           >
             <LogOut className="w-3.5 h-3.5" />
             <span>Sign Out</span>
@@ -109,36 +106,37 @@ export default function AdminLayout() {
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Top Header */}
-        <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-10 shadow-sm">
+        <header className="bg-white border-b border-slate-200 h-16 flex items-center justify-between px-4 lg:px-8 sticky top-0 z-10 shadow-sm">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="lg:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100"
+              className="lg:hidden p-2 text-slate-600 hover:bg-slate-100"
             >
               <Menu className="w-5 h-5" />
             </button>
-            <div className="hidden sm:flex items-center gap-2 text-xs text-gray-500">
-              <span className="font-medium text-gray-700">Talent Manager</span>
-              <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-500">
+              <span className="font-semibold text-slate-900 uppercase tracking-wider">Talent Administration</span>
+              <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
               <span className="capitalize">{location.pathname.split('/')[2] || 'Overview'}</span>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            {/* Direct Link to Candidate View for Testing */}
+            {/* Direct Link to Candidate View */}
             <Link
               to="/portal"
               target="_blank"
-              className="hidden md:flex items-center gap-1.5 text-xs text-blue-700 bg-blue-50 hover:bg-blue-100 px-3 py-1.5 rounded-lg font-medium transition-colors border border-blue-200"
+              className="hidden md:flex items-center gap-1.5 text-xs text-slate-800 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 font-semibold uppercase tracking-wider transition-colors border border-slate-300 rounded-none"
+              style={{ borderRadius: 0 }}
             >
-              <span>View Candidate Portal</span>
+              <span>Candidate View</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </Link>
 
             {/* Notification Bell */}
-            <button className="p-2 text-gray-500 hover:text-gray-700 rounded-lg hover:bg-gray-100 relative">
+            <button className="p-2 text-slate-500 hover:text-slate-900 border border-slate-200 hover:bg-slate-100 relative rounded-none">
               <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-600" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-[#0f1b29]" />
             </button>
           </div>
         </header>

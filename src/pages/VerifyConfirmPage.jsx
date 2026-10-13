@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams } from 'react-router-dom'
-import { CheckCircle2, Loader2, AlertCircle } from 'lucide-react'
 import { useAuthStore } from '../store/authStore'
 import { useApplicationStore } from '../store/applicationStore'
+import { useUiStore } from '../store/uiStore'
+import PortalLayout from '../components/PortalLayout'
 
 export default function VerifyConfirmPage() {
   const [searchParams] = useSearchParams()
@@ -11,8 +12,9 @@ export default function VerifyConfirmPage() {
   const email = searchParams.get('email')
   const verifyEmail = useAuthStore(s => s.verifyEmail)
   const setStep = useApplicationStore(s => s.setStep)
+  const shuffleNavigate = useUiStore(s => s.shuffleNavigate)
 
-  const [status, setStatus] = useState('verifying') // 'verifying', 'success', 'error'
+  const [status, setStatus] = useState('verifying')
 
   useEffect(() => {
     if (!token) {
@@ -21,58 +23,63 @@ export default function VerifyConfirmPage() {
     }
 
     const timer = setTimeout(() => {
-      // Mark verified in auth store
       verifyEmail(email || 'candidate@demo.co.za')
       setStep(0)
       setStatus('success')
 
       setTimeout(() => {
-        navigate('/apply/cv')
-      }, 1500)
-    }, 1000)
+        shuffleNavigate(navigate, '/apply/cv', 'forward')
+      }, 1000)
+    }, 800)
 
     return () => clearTimeout(timer)
-  }, [token, email, navigate, verifyEmail, setStep])
+  }, [token, email, navigate, verifyEmail, setStep, shuffleNavigate])
 
   return (
-    <div className="bg-gradient-portal flex items-center justify-center min-h-screen p-4">
-      <div className="card-form text-center animate-fade-in shadow-2xl py-12">
+    <PortalLayout
+      category="VERIFICATION STATUS"
+      title="Validating candidate security token"
+      subtitle="Ensuring verified, authenticated access to your executive recruitment dossier under POPIA."
+      showProgressBar={false}
+    >
+      <div className="text-center py-6">
         {status === 'verifying' && (
           <div className="space-y-4">
-            <Loader2 className="w-12 h-12 text-blue-600 animate-spin mx-auto" />
-            <h2 className="text-xl font-semibold text-gray-900">Verifying your email...</h2>
-            <p className="text-sm text-gray-500">Please hold on while we confirm your account security.</p>
+            <div className="w-10 h-10 border-2 border-slate-900 border-t-transparent animate-spin mx-auto" />
+            <h2 className="formal-heading-dark text-2xl font-semibold">Verifying your credentials...</h2>
+            <p className="text-xs text-slate-500">Please hold on while we validate your access token.</p>
           </div>
         )}
 
         {status === 'success' && (
-          <div className="space-y-4 animate-slide-up">
-            <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto text-green-600">
-              <CheckCircle2 className="w-10 h-10 animate-check" />
+          <div className="space-y-4 animate-fade-in">
+            <div className="w-12 h-12 bg-slate-900 text-white flex items-center justify-center mx-auto text-xl font-bold">
+              ✓
             </div>
-            <h2 className="text-2xl font-bold text-gray-900">Email Verified!</h2>
-            <p className="text-sm text-gray-600">
-              Your account is active. Redirecting you to upload your CV...
+            <h2 className="formal-heading-dark text-2xl font-semibold">Email Verified Successfully</h2>
+            <p className="text-xs text-slate-600">
+              Your profile is verified. Redirecting to CV submission...
             </p>
           </div>
         )}
 
         {status === 'error' && (
           <div className="space-y-4">
-            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto text-red-600">
-              <AlertCircle className="w-10 h-10" />
+            <div className="w-12 h-12 bg-red-100 text-red-800 flex items-center justify-center mx-auto text-xl font-bold">
+              !
             </div>
-            <h2 className="text-xl font-bold text-gray-900">Invalid Verification Link</h2>
-            <p className="text-sm text-gray-500">This token may have expired or is invalid.</p>
+            <h2 className="formal-heading-dark text-2xl font-semibold">Verification Link Expired</h2>
+            <p className="text-xs text-slate-500">The verification token could not be verified.</p>
             <button
-              onClick={() => navigate('/apply/verify-email')}
-              className="btn-primary mt-4"
+              onClick={() => shuffleNavigate(navigate, '/apply/verify-email', 'backward')}
+              className="bg-[#0f1b29] text-white py-2.5 px-5 text-xs font-semibold uppercase tracking-wider rounded-none mt-2"
+              style={{ borderRadius: 0 }}
             >
-              Request a New Link
+              Request New Token
             </button>
           </div>
         )}
       </div>
-    </div>
+    </PortalLayout>
   )
 }

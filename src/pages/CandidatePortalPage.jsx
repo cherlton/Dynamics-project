@@ -2,26 +2,18 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuthStore } from '../store/authStore'
 import { useApplicationStore } from '../store/applicationStore'
+import Header from '../components/Header'
 import Footer from '../components/Footer'
 import Modal from '../components/Modal'
-import {
-  CheckCircle2, Clock, Calendar, Video, MapPin, FileText,
-  Shield, AlertCircle, LogOut, Download, MessageSquare, ChevronRight,
-  ExternalLink, User, Lock
-} from 'lucide-react'
 
 export default function CandidatePortalPage() {
   const navigate = useNavigate()
   const { user, logout } = useAuthStore()
   const application = useApplicationStore(s => s.application)
 
-  const [interviewStatus, setInterviewStatus] = useState('pending') // 'pending' | 'accepted' | 'reschedule-requested'
+  const [interviewStatus, setInterviewStatus] = useState('pending')
   const [rescheduleModal, setRescheduleModal] = useState(false)
   const [rescheduleNote, setRescheduleNote] = useState('')
-  const [activeTab, setActiveTab] = useState('overview') // 'overview' | 'documents' | 'history'
-
-  // Application stage tracking
-  const currentStage = 'shortlisted' // in demo, this candidate is shortlisted!
 
   const stages = [
     { key: 'submitted', label: 'Submitted', done: true, date: '12 Feb 2026' },
@@ -46,143 +38,143 @@ export default function CandidatePortalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col font-sans">
-      {/* Top Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-20">
-        <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-blue-700 text-white rounded-xl flex items-center justify-center font-bold">
-              <Shield className="w-5 h-5" />
-            </div>
-            <div>
-              <span className="font-bold text-gray-900 text-sm block">Candidate Portal</span>
-              <span className="text-[11px] text-gray-400">Application Reference: APP-2026-00123</span>
-            </div>
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-slate-900">
+      {/* Gaspar Header */}
+      <Header />
+
+      {/* Sub-bar for Candidate Session */}
+      <div className="bg-white border-b border-slate-200">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between text-xs">
+          <div>
+            <span className="font-bold text-slate-900 uppercase tracking-wider">Candidate Portal</span>
+            <span className="text-slate-500 ml-2">Reference: {application.referenceNumber || 'APP-2026-00123'}</span>
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="hidden sm:flex items-center gap-2 text-xs text-gray-600 bg-gray-100 px-3 py-1.5 rounded-full">
-              <User className="w-3.5 h-3.5 text-blue-600" />
-              <span>{user?.name || 'Thabo Mokoena'} ({user?.email})</span>
-            </div>
-
-            <Link
-              to="/portal/privacy"
-              className="text-xs text-blue-700 hover:text-blue-900 font-medium hidden md:inline"
-            >
-              Privacy & Data Rights
+            <span className="hidden sm:inline text-slate-600 font-medium">
+              {user?.name || 'Thabo Mokoena'} ({user?.email || 'candidate@demo.co.za'})
+            </span>
+            <Link to="/portal/privacy" className="text-slate-700 hover:text-slate-900 underline font-medium">
+              POPIA Data Rights
             </Link>
-
             <button
               onClick={handleLogout}
-              className="btn-ghost flex items-center gap-1.5 text-xs text-gray-600 hover:text-red-600 py-1.5 px-3"
+              className="text-xs uppercase font-semibold text-red-700 hover:text-red-900 border border-slate-300 px-3 py-1"
             >
-              <LogOut className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Sign Out</span>
+              Sign Out
             </button>
           </div>
         </div>
-      </header>
+      </div>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-6xl w-full mx-auto p-4 md:p-8 space-y-6">
-        {/* Shortlist Banner Highlight */}
-        <div className="bg-gradient-to-r from-blue-700 to-blue-600 text-white rounded-2xl p-6 shadow-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <main className="flex-1 max-w-7xl w-full mx-auto p-4 sm:px-6 lg:px-8 py-8 space-y-6">
+        {/* Shortlist Banner Highlight (Formal Navy, Zero Rounded Corners) */}
+        <div
+          className="bg-[#0f1b29] text-white p-6 sm:p-8 border border-slate-800 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6 rounded-none"
+          style={{ borderRadius: 0 }}
+        >
           <div>
-            <span className="inline-block px-2.5 py-0.5 rounded-full bg-blue-500/50 text-blue-100 text-xs font-semibold mb-2">
-              Status Update: Shortlisted
+            <span className="inline-block px-2.5 py-0.5 bg-slate-800 border border-slate-700 text-slate-300 text-[11px] font-semibold uppercase tracking-wider mb-2">
+              Status Update: Candidate Shortlisted
             </span>
-            <h1 className="text-2xl font-bold">Congratulations! You've Been Shortlisted</h1>
-            <p className="text-blue-100 text-sm mt-1 max-w-xl">
-              Your profile for <strong>Senior Business Analyst</strong> has progressed to the interview stage. Please review the proposed interview slot below.
+            <h1 className="formal-heading text-2xl sm:text-3xl font-medium">
+              Congratulations. Your application has been shortlisted.
+            </h1>
+            <p className="text-slate-300 text-xs sm:text-sm mt-2 max-w-xl font-normal leading-relaxed">
+              Your profile for <strong>{application.jobTitle || 'Senior Business Analyst'}</strong> has been advanced by the hiring committee. Please review and confirm your proposed interview appointment.
             </p>
           </div>
           <button
             onClick={() => document.getElementById('interview-card')?.scrollIntoView({ behavior: 'smooth' })}
-            className="bg-white text-blue-700 px-5 py-2.5 rounded-xl font-semibold text-xs hover:bg-blue-50 transition-colors self-start md:self-auto shadow-sm"
+            className="bg-white text-[#0f1b29] hover:bg-slate-100 px-5 py-3 font-semibold text-xs uppercase tracking-wider transition-colors duration-150 self-start md:self-auto rounded-none shadow-sm"
+            style={{ borderRadius: 0 }}
           >
             Review Interview Details
           </button>
         </div>
 
-        {/* Application Stage Tracker */}
-        <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm">
-          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wider mb-6">
-            Application Status Tracker
+        {/* Application Stage Tracker (Sharp Rectangular Step Grid) */}
+        <div className="bg-white p-6 border border-slate-200 shadow-sm rounded-none">
+          <h2 className="text-xs font-bold text-slate-900 uppercase tracking-wider mb-4 pb-2 border-b border-slate-100">
+            Application Evaluation Milestones
           </h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {stages.map((st, idx) => (
-              <div key={st.key} className="relative">
-                <div className={`p-4 rounded-xl border transition-all ${
+              <div
+                key={st.key}
+                className={`p-3.5 border transition-all rounded-none ${
                   st.current
-                    ? 'border-blue-600 bg-blue-50/60 ring-2 ring-blue-100'
+                    ? 'border-[#0f1b29] bg-slate-50 ring-1 ring-[#0f1b29]'
                     : st.done
-                      ? 'border-green-200 bg-green-50/40'
-                      : 'border-gray-200 bg-gray-50/50 text-gray-400'
-                }`}>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-bold text-gray-500">0{idx + 1}</span>
-                    {st.done ? (
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    ) : (
-                      <Clock className="w-4 h-4 text-gray-400" />
-                    )}
-                  </div>
-                  <h3 className={`text-sm font-semibold ${st.current ? 'text-blue-900' : st.done ? 'text-gray-900' : 'text-gray-400'}`}>
-                    {st.label}
-                  </h3>
-                  <span className="text-[11px] text-gray-500 block mt-1">{st.date}</span>
+                    ? 'border-slate-300 bg-white'
+                    : 'border-slate-200 bg-slate-50 text-slate-400'
+                }`}
+              >
+                <div className="flex items-center justify-between mb-1.5 text-xs">
+                  <span className="font-mono text-slate-500 font-bold">0{idx + 1}</span>
+                  {st.done ? (
+                    <span className="text-emerald-700 font-bold">✓</span>
+                  ) : (
+                    <span className="text-slate-400">⏱</span>
+                  )}
                 </div>
+                <h3 className={`text-xs font-bold uppercase tracking-wider ${
+                  st.current ? 'text-[#0f1b29]' : st.done ? 'text-slate-900' : 'text-slate-400'
+                }`}>
+                  {st.label}
+                </h3>
+                <span className="text-[11px] text-slate-500 block mt-0.5">{st.date}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* Interview Slot Card */}
-        <div id="interview-card" className="bg-white rounded-2xl p-6 border border-blue-200 shadow-sm">
-          <div className="flex items-center justify-between pb-4 border-b border-gray-100 mb-5">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center">
-                <Calendar className="w-5 h-5" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-gray-900">Round 1: Competency & Experience Interview</h2>
-                <span className="text-xs text-gray-500">Proposed by Talent Acquisition Team</span>
-              </div>
+        <div id="interview-card" className="bg-white p-6 border border-slate-300 shadow-sm rounded-none">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 border-b border-slate-100 mb-5 gap-3">
+            <div>
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                Round 01 Examination
+              </span>
+              <h2 className="formal-heading-dark text-xl font-semibold mt-0.5">
+                Competency & Experience Panel Interview
+              </h2>
             </div>
 
-            <span className={`status-pill ${
+            <span className={`status-pill self-start sm:self-auto ${
               interviewStatus === 'accepted'
                 ? 'status-pill-success'
                 : interviewStatus === 'reschedule-requested'
-                  ? 'status-pill-warning'
-                  : 'status-pill-info'
+                ? 'status-pill-warning'
+                : 'status-pill-info'
             }`}>
-              {interviewStatus === 'accepted' ? 'Confirmed by Candidate' : interviewStatus === 'reschedule-requested' ? 'Reschedule Requested' : 'Awaiting Confirmation'}
+              {interviewStatus === 'accepted'
+                ? 'Confirmed by Candidate'
+                : interviewStatus === 'reschedule-requested'
+                ? 'Reschedule Requested'
+                : 'Awaiting Candidate Confirmation'}
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-            <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200">
-              <span className="text-xs text-gray-400 block font-medium">Date & Time</span>
-              <span className="text-sm font-bold text-gray-900">Thursday, 15 Oct 2026</span>
-              <span className="text-xs text-blue-600 block mt-0.5">14:00 – 14:45 SAST</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
+            <div className="p-3.5 bg-slate-50 border border-slate-200">
+              <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Date & Time</span>
+              <span className="text-sm font-bold text-slate-900">Thursday, 15 Oct 2026</span>
+              <span className="text-xs text-slate-600 block mt-0.5">14:00 – 14:45 SAST</span>
             </div>
 
-            <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200">
-              <span className="text-xs text-gray-400 block font-medium">Format</span>
-              <div className="flex items-center gap-1.5 text-sm font-bold text-gray-900 mt-0.5">
-                <Video className="w-4 h-4 text-purple-600" />
-                <span>Microsoft Teams Video</span>
-              </div>
-              <span className="text-xs text-gray-500 block mt-0.5">Link provided upon confirmation</span>
+            <div className="p-3.5 bg-slate-50 border border-slate-200">
+              <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Format</span>
+              <span className="text-sm font-bold text-slate-900">Microsoft Teams Video</span>
+              <span className="text-xs text-slate-500 block mt-0.5">Encrypted link supplied upon confirmation</span>
             </div>
 
-            <div className="p-3.5 bg-gray-50 rounded-xl border border-gray-200">
-              <span className="text-xs text-gray-400 block font-medium">Interview Panel</span>
-              <span className="text-sm font-bold text-gray-900">Sarah Johnson</span>
-              <span className="text-xs text-gray-500 block mt-0.5">Lead Talent Manager</span>
+            <div className="p-3.5 bg-slate-50 border border-slate-200">
+              <span className="text-[10px] text-slate-400 block uppercase font-bold tracking-wider">Interview Panel</span>
+              <span className="text-sm font-bold text-slate-900">Sarah Johnson</span>
+              <span className="text-xs text-slate-500 block mt-0.5">Senior Talent Partner</span>
             </div>
           </div>
 
@@ -191,39 +183,29 @@ export default function CandidatePortalPage() {
               <button
                 type="button"
                 onClick={handleAcceptInterview}
-                className="btn-primary text-xs py-2.5 px-5 flex items-center gap-2"
+                className="bg-[#0f1b29] hover:bg-[#1a2d42] text-white py-2.5 px-5 font-semibold text-xs uppercase tracking-wider rounded-none"
+                style={{ borderRadius: 0 }}
               >
-                <CheckCircle2 className="w-4 h-4" />
-                <span>Accept Interview Slot</span>
+                Accept Interview Slot
               </button>
 
               <button
                 type="button"
                 onClick={() => setRescheduleModal(true)}
-                className="btn-secondary text-xs py-2.5 px-4"
+                className="border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 py-2.5 px-4 font-semibold text-xs uppercase tracking-wider rounded-none"
+                style={{ borderRadius: 0 }}
               >
-                Request Another Time
-              </button>
-
-              <button
-                type="button"
-                onClick={() => alert('Calendar invite (.ics) downloaded')}
-                className="btn-ghost text-xs py-2 px-3 text-gray-600"
-              >
-                Add to Calendar
+                Request Alternate Slot
               </button>
             </div>
           )}
 
           {interviewStatus === 'accepted' && (
-            <div className="p-4 bg-green-50 border border-green-200 rounded-xl flex items-center justify-between text-xs text-green-800">
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="w-5 h-5 text-green-600" />
-                <span>You have accepted this slot. Calendar invitation sent to your email.</span>
-              </div>
+            <div className="p-3.5 bg-emerald-50 border border-emerald-300 text-xs text-emerald-900 flex items-center justify-between">
+              <span>Slot confirmed. Calendar invitation dispatched to your registered email address.</span>
               <button
                 onClick={() => setRescheduleModal(true)}
-                className="text-green-800 underline hover:text-green-950 font-medium"
+                className="text-emerald-900 underline font-semibold ml-4"
               >
                 Need to reschedule?
               </button>
@@ -231,118 +213,89 @@ export default function CandidatePortalPage() {
           )}
 
           {interviewStatus === 'reschedule-requested' && (
-            <div className="p-4 bg-amber-50 border border-amber-200 rounded-xl text-xs text-amber-800">
-              Your request for an alternate time has been sent to Sarah Johnson. You will receive an updated invitation shortly.
+            <div className="p-3.5 bg-amber-50 border border-amber-300 text-xs text-amber-900">
+              Your reschedule request has been forwarded to Sarah Johnson. An updated invitation will follow shortly.
             </div>
           )}
         </div>
 
-        {/* Two-column layout for Documents & Profile */}
+        {/* Lower Two-column Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Documents Card */}
-          <div className="md:col-span-2 bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-gray-100">
-              <h3 className="font-bold text-gray-900 text-sm">My Uploaded Documents</h3>
-              <span className="text-xs text-gray-400">Locked after submission</span>
-            </div>
-
-            <div className="space-y-3 text-xs">
-              <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200">
-                <div className="flex items-center gap-3">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <span className="font-semibold text-gray-900 block">Thabo_Mokoena_CV.pdf</span>
-                    <span className="text-gray-400">CV / Resume • 2.4 MB</span>
-                  </div>
+          <div className="md:col-span-2 bg-white p-6 border border-slate-200 space-y-3">
+            <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider pb-2 border-b border-slate-100">
+              Submitted Dossier Documents
+            </h3>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200">
+                <div>
+                  <span className="font-semibold text-slate-900 block">{application.cv?.name || 'Curriculum_Vitae.pdf'}</span>
+                  <span className="text-slate-500 text-[11px]">Primary CV • Extracted</span>
                 </div>
-                <button className="text-blue-700 hover:text-blue-900 font-medium flex items-center gap-1">
-                  <Download className="w-3.5 h-3.5" />
-                  <span>Download</span>
-                </button>
+                <span className="text-emerald-800 bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border border-emerald-200">
+                  Verified
+                </span>
               </div>
-
-              <div className="flex items-center justify-between p-3 rounded-xl bg-gray-50 border border-gray-200">
-                <div className="flex items-center gap-3">
-                  <FileText className="w-5 h-5 text-blue-600" />
-                  <div>
-                    <span className="font-semibold text-gray-900 block">Certified_ID_Copy.pdf</span>
-                    <span className="text-gray-400">South African ID • Encrypted</span>
-                  </div>
+              <div className="flex items-center justify-between p-3 bg-slate-50 border border-slate-200">
+                <div>
+                  <span className="font-semibold text-slate-900 block">{application.documents?.certifiedId?.name || 'Certified_ID.pdf'}</span>
+                  <span className="text-slate-500 text-[11px]">South African Identity • Encrypted</span>
                 </div>
-                <span className="text-green-700 font-medium bg-green-50 px-2 py-0.5 rounded border border-green-200">
+                <span className="text-emerald-800 bg-emerald-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider border border-emerald-200">
                   Verified
                 </span>
               </div>
             </div>
           </div>
 
-          {/* POPIA & Privacy Actions Quick Card */}
-          <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-sm space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-gray-100">
-              <Lock className="w-4 h-4 text-blue-700" />
-              <h3 className="font-bold text-gray-900 text-sm">Data & POPIA Rights</h3>
-            </div>
-
-            <p className="text-xs text-gray-500 leading-relaxed">
-              Under POPIA, you retain full rights over your personal recruitment records.
+          <div className="bg-white p-6 border border-slate-200 space-y-3">
+            <h3 className="font-bold text-slate-900 text-xs uppercase tracking-wider pb-2 border-b border-slate-100">
+              POPIA Data Rights
+            </h3>
+            <p className="text-xs text-slate-500 leading-relaxed">
+              Exercise your statutory rights under South African POPIA regulations.
             </p>
-
-            <div className="space-y-2">
+            <div className="space-y-2 text-xs">
               <Link
                 to="/portal/privacy"
-                className="w-full text-left p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-between text-xs text-gray-700 transition-colors"
+                className="block p-2.5 bg-slate-50 border border-slate-200 text-slate-800 hover:bg-slate-100 font-medium"
               >
-                <span>Download My Data (Section 23)</span>
-                <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
+                Download My Data (Section 23) →
               </Link>
-
               <Link
                 to="/portal/privacy"
-                className="w-full text-left p-2.5 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 flex items-center justify-between text-xs text-gray-700 transition-colors"
+                className="block p-2.5 bg-slate-50 border border-slate-200 text-slate-800 hover:bg-slate-100 font-medium"
               >
-                <span>Request Correction (Section 24)</span>
-                <ChevronRight className="w-3.5 h-3.5 text-gray-400" />
-              </Link>
-
-              <Link
-                to="/portal/privacy"
-                className="w-full text-left p-2.5 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 flex items-center justify-between text-xs text-red-700 transition-colors"
-              >
-                <span>Withdraw Application / Erasure</span>
-                <ChevronRight className="w-3.5 h-3.5 text-red-400" />
+                Request Correction (Section 24) →
               </Link>
             </div>
           </div>
         </div>
       </main>
 
-      {/* Reschedule Modal */}
       <Modal
         isOpen={rescheduleModal}
         onClose={() => setRescheduleModal(false)}
         title="Request Alternate Interview Slot"
       >
-        <div className="space-y-4 text-xs">
-          <p className="text-gray-600">
-            Please let our talent coordinator know what dates and times work best for your schedule:
-          </p>
+        <div className="space-y-3 text-xs text-slate-600">
+          <p>Please advise our talent coordinator of your scheduling availability:</p>
           <textarea
             rows={3}
             value={rescheduleNote}
             onChange={(e) => setRescheduleNote(e.target.value)}
-            placeholder="e.g. I am available any day next week after 15:00 SAST..."
+            placeholder="e.g. I am available next Tuesday and Wednesday after 14:00 SAST..."
             className="input-field text-xs"
           />
           <div className="flex justify-end gap-2 pt-2">
             <button
               onClick={() => setRescheduleModal(false)}
-              className="btn-secondary text-xs"
+              className="border border-slate-300 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-slate-800"
             >
               Cancel
             </button>
             <button
               onClick={handleRequestReschedule}
-              className="btn-primary text-xs"
+              className="bg-[#0f1b29] text-white px-4 py-2 text-xs font-semibold uppercase tracking-wider"
             >
               Submit Request
             </button>

@@ -1,16 +1,13 @@
 import { useState, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApplicationStore } from '../store/applicationStore'
-import ProgressBar from '../components/ProgressBar'
-import Footer from '../components/Footer'
-import {
-  FileText, Upload, CheckCircle2, AlertCircle, Trash2, ArrowRight,
-  ArrowLeft, Lock, Shield, Plus, FileCheck
-} from 'lucide-react'
+import { useUiStore } from '../store/uiStore'
+import PortalLayout from '../components/PortalLayout'
 
 export default function DocumentsPage() {
   const navigate = useNavigate()
   const { application, updateDocuments, setStep } = useApplicationStore()
+  const shuffleNavigate = useUiStore(s => s.shuffleNavigate)
 
   const [docs, setDocs] = useState(application.documents || {
     certifiedId: null,
@@ -20,7 +17,7 @@ export default function DocumentsPage() {
     other: [],
   })
 
-  const [coverMode, setCoverMode] = useState('text') // 'text' | 'file'
+  const [coverMode, setCoverMode] = useState('text')
   const [error, setError] = useState('')
 
   const idInputRef = useRef(null)
@@ -92,302 +89,298 @@ export default function DocumentsPage() {
       return
     }
     setStep(3)
-    navigate('/apply/screening')
+    shuffleNavigate(navigate, '/apply/screening', 'forward')
   }
 
   return (
-    <div className="bg-gradient-portal flex flex-col min-h-screen">
-      <div className="flex-1 max-w-card w-full mx-auto p-4 md:py-8">
-        <div className="card-form shadow-xl animate-fade-in">
-          <ProgressBar currentStep={2} />
+    <PortalLayout
+      category="STEP 03 OF 05 — STATUTORY VERIFICATION"
+      title="Submit supporting candidate documentation"
+      subtitle="Upload your certified ID copy or passport and qualification certificates to authenticate your candidate profile under POPIA."
+      currentStep={2}
+      showProgressBar={true}
+    >
+      <div>
+        <div className="mb-5 pb-3 border-b border-slate-200">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block mb-1">
+            Section 03 of 05 — Formal Verification
+          </span>
+          <h2 className="formal-heading-dark text-2xl sm:text-3xl font-semibold">
+            Supporting Documents
+          </h2>
+          <p className="text-xs text-slate-500 mt-1">
+            Please attach your certified identification copy and any relevant certificates to authenticate your submission.
+          </p>
+        </div>
 
-          <div className="mb-6">
-            <h1 className="text-page-title text-gray-900">Supporting Documents</h1>
-            <div className="gray-dash mt-2 mb-2" />
-            <p className="text-gray-600 text-sm">
-              Please provide certified identification and any optional documents that support your application.
-            </p>
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-300 text-xs text-red-800 rounded-none">
+            {error}
           </div>
+        )}
 
-          {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 flex items-center gap-2 text-sm text-red-700">
-              <AlertCircle className="w-5 h-5 flex-shrink-0 text-red-500" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleNext} className="space-y-6">
-            {/* 1. Mandatory ID Document */}
-            <div className="p-5 border-2 border-blue-200 rounded-2xl bg-blue-50/20">
-              <div className="flex items-start justify-between gap-4 mb-2">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <FileCheck className="w-5 h-5 text-blue-700" />
-                    <h3 className="font-semibold text-gray-900 text-sm">
-                      Certified South African ID or Passport <span className="text-danger">*</span>
-                    </h3>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Certified within the last 3 months. PDF, JPG, or PNG (Max 5MB).
-                  </p>
-                </div>
-                <span className="text-[11px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full">
-                  Required
-                </span>
-              </div>
-
-              {/* Just-in-time Privacy Notice (POPIA compliant) */}
-              <div className="my-3 p-3 bg-white rounded-xl border border-blue-100 flex items-start gap-2 text-xs text-gray-600">
-                <Lock className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
-                <p>
-                  <strong>Why we need this:</strong> In accordance with SA labour law, your ID confirms your right to work. It is stored encrypted in compliance with POPIA, only accessible by authorized recruiters, and retained strictly for the statutory retention period.
+        <form onSubmit={handleNext} className="space-y-5">
+          {/* 1. Mandatory ID Document */}
+          <div className="border border-slate-300 p-4 bg-slate-50">
+            <div className="flex items-start justify-between gap-4 mb-2">
+              <div>
+                <h3 className="font-semibold text-slate-900 text-xs uppercase tracking-wider">
+                  Certified South African ID or Passport *
+                </h3>
+                <p className="text-[11px] text-slate-500 mt-0.5">
+                  Certified within the last 3 months. PDF, JPG, or PNG (Max 5MB).
                 </p>
               </div>
-
-              {!docs.certifiedId ? (
-                <div
-                  onClick={() => idInputRef.current?.click()}
-                  className="border-2 border-dashed border-gray-300 hover:border-blue-500 rounded-xl p-6 text-center cursor-pointer transition-colors bg-white"
-                >
-                  <input
-                    ref={idInputRef}
-                    type="file"
-                    className="hidden"
-                    accept=".pdf,.jpg,.jpeg,.png"
-                    onChange={(e) => e.target.files?.[0] && handleIdUpload(e.target.files[0])}
-                  />
-                  <Upload className="w-6 h-6 text-blue-600 mx-auto mb-2" />
-                  <span className="text-xs font-semibold text-gray-800 block">Click to upload Certified ID</span>
-                  <span className="text-[11px] text-gray-400">PDF, JPG, PNG up to 5MB</span>
-                </div>
-              ) : (
-                <div className="flex items-center justify-between p-3.5 bg-white border border-green-200 rounded-xl">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-lg bg-green-100 text-green-700 flex items-center justify-center">
-                      <CheckCircle2 className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <span className="text-xs font-semibold text-gray-900 block">{docs.certifiedId.name}</span>
-                      <span className="text-[10px] text-gray-500">
-                        {(docs.certifiedId.size / 1024).toFixed(0)} KB • Uploaded securely
-                      </span>
-                    </div>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setDocs(prev => ({ ...prev, certifiedId: null }))
-                      updateDocuments('certifiedId', null)
-                    }}
-                    className="p-1.5 text-gray-400 hover:text-red-600 rounded-lg"
-                    title="Remove ID"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              )}
+              <span className="text-[10px] font-bold text-red-800 bg-red-100 px-2 py-0.5 border border-red-200 uppercase tracking-wider">
+                Mandatory
+              </span>
             </div>
 
-            {/* 2. Cover Letter (Optional) */}
-            <div className="p-5 border border-gray-200 rounded-2xl bg-white space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-gray-700" />
-                  <h3 className="font-semibold text-gray-900 text-sm">Cover Letter (Optional)</h3>
-                </div>
-                <div className="flex items-center gap-1 bg-gray-100 p-1 rounded-lg text-xs">
-                  <button
-                    type="button"
-                    onClick={() => setCoverMode('text')}
-                    className={`px-2.5 py-1 rounded font-medium ${coverMode === 'text' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-600'}`}
-                  >
-                    Type Letter
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setCoverMode('file')}
-                    className={`px-2.5 py-1 rounded font-medium ${coverMode === 'file' ? 'bg-white text-blue-700 shadow-sm' : 'text-gray-600'}`}
-                  >
-                    Upload File
-                  </button>
-                </div>
-              </div>
+            {/* Just-in-time Privacy Notice */}
+            <p className="text-[11px] text-slate-600 bg-white p-2.5 border border-slate-200 my-2 leading-relaxed">
+              <strong>Statutory Requirement:</strong> In compliance with South African labor regulations, your ID verifies your entitlement to work. Uploaded documents are encrypted and accessible exclusively by designated talent evaluators under POPIA.
+            </p>
 
-              {coverMode === 'text' ? (
+            {!docs.certifiedId ? (
+              <div
+                onClick={() => idInputRef.current?.click()}
+                className="border border-dashed border-slate-300 hover:border-slate-800 p-5 text-center cursor-pointer transition-colors bg-white mt-3"
+              >
+                <input
+                  ref={idInputRef}
+                  type="file"
+                  className="hidden"
+                  accept=".pdf,.jpg,.jpeg,.png"
+                  onChange={(e) => e.target.files?.[0] && handleIdUpload(e.target.files[0])}
+                />
+                <span className="text-xs font-semibold text-slate-900 block uppercase tracking-wider">
+                  Select Certified ID / Passport File
+                </span>
+                <span className="text-[11px] text-slate-400">PDF, JPG, PNG up to 5MB</span>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-3 bg-white border border-slate-300 mt-3">
                 <div>
-                  <textarea
-                    rows={4}
-                    value={docs.coverLetterText || ''}
-                    onChange={(e) => {
-                      const updated = { ...docs, coverLetterText: e.target.value }
-                      setDocs(updated)
-                      updateDocuments('coverLetterText', e.target.value)
-                    }}
-                    placeholder="Tell the hiring manager why you are a great fit for this role..."
-                    className="input-field text-sm"
-                  />
-                  <span className="text-[10px] text-gray-400 block text-right mt-1">
-                    {(docs.coverLetterText || '').length} characters
+                  <span className="text-xs font-semibold text-slate-900 block">{docs.certifiedId.name}</span>
+                  <span className="text-[11px] text-slate-500">
+                    {(docs.certifiedId.size / 1024).toFixed(0)} KB • Attached securely
                   </span>
                 </div>
-              ) : (
-                <div>
-                  {!docs.coverLetter ? (
-                    <div
-                      onClick={() => coverFileInputRef.current?.click()}
-                      className="border border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:bg-gray-50"
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDocs(prev => ({ ...prev, certifiedId: null }))
+                    updateDocuments('certifiedId', null)
+                  }}
+                  className="text-xs text-red-700 hover:text-red-900 font-bold uppercase tracking-wider px-2 py-1"
+                >
+                  Remove
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* 2. Cover Letter */}
+          <div className="border border-slate-200 p-4 bg-white space-y-3">
+            <div className="flex items-center justify-between">
+              <h3 className="font-semibold text-slate-900 text-xs uppercase tracking-wider">
+                Cover Letter (Optional)
+              </h3>
+              <div className="flex items-center gap-1 border border-slate-200 p-0.5 text-xs">
+                <button
+                  type="button"
+                  onClick={() => setCoverMode('text')}
+                  className={`px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider ${
+                    coverMode === 'text' ? 'bg-[#0f1b29] text-white' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Type Statement
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setCoverMode('file')}
+                  className={`px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider ${
+                    coverMode === 'file' ? 'bg-[#0f1b29] text-white' : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  Upload File
+                </button>
+              </div>
+            </div>
+
+            {coverMode === 'text' ? (
+              <div>
+                <textarea
+                  rows={3}
+                  value={docs.coverLetterText || ''}
+                  onChange={(e) => {
+                    const updated = { ...docs, coverLetterText: e.target.value }
+                    setDocs(updated)
+                    updateDocuments('coverLetterText', e.target.value)
+                  }}
+                  placeholder="Outline your alignment with the role and key career motivations..."
+                  className="input-field text-xs py-2"
+                />
+                <span className="text-[10px] text-slate-400 block text-right mt-1">
+                  {(docs.coverLetterText || '').length} characters
+                </span>
+              </div>
+            ) : (
+              <div>
+                {!docs.coverLetter ? (
+                  <div
+                    onClick={() => coverFileInputRef.current?.click()}
+                    className="border border-dashed border-slate-300 p-4 text-center cursor-pointer hover:bg-slate-50"
+                  >
+                    <input
+                      ref={coverFileInputRef}
+                      type="file"
+                      className="hidden"
+                      accept=".pdf,.doc,.docx"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0]
+                        if (file) {
+                          const d = { name: file.name, size: file.size }
+                          setDocs(prev => ({ ...prev, coverLetter: d }))
+                          updateDocuments('coverLetter', d)
+                        }
+                      }}
+                    />
+                    <span className="text-xs font-semibold text-slate-800 uppercase tracking-wider block">
+                      Attach Cover Letter Document
+                    </span>
+                    <span className="text-[11px] text-slate-400">PDF, DOC, DOCX up to 5MB</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center justify-between p-2.5 bg-slate-50 border border-slate-200 text-xs">
+                    <span className="font-medium text-slate-900">{docs.coverLetter.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setDocs(prev => ({ ...prev, coverLetter: null }))
+                        updateDocuments('coverLetter', null)
+                      }}
+                      className="text-xs text-red-700 hover:text-red-900 font-bold"
                     >
-                      <input
-                        ref={coverFileInputRef}
-                        type="file"
-                        className="hidden"
-                        accept=".pdf,.doc,.docx"
-                        onChange={(e) => {
-                          const file = e.target.files?.[0]
-                          if (file) {
-                            const d = { name: file.name, size: file.size }
-                            setDocs(prev => ({ ...prev, coverLetter: d }))
-                            updateDocuments('coverLetter', d)
-                          }
-                        }}
-                      />
-                      <Upload className="w-5 h-5 text-gray-500 mx-auto mb-1" />
-                      <span className="text-xs text-gray-600">Upload cover letter (PDF, DOC)</span>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-between p-3 bg-gray-50 rounded-xl border border-gray-200">
-                      <span className="text-xs font-medium text-gray-800">{docs.coverLetter.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDocs(prev => ({ ...prev, coverLetter: null }))
-                          updateDocuments('coverLetter', null)
-                        }}
-                        className="text-gray-400 hover:text-red-600"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* 3. Qualification Certificates (Optional) */}
-            <div className="p-5 border border-gray-200 rounded-2xl bg-white space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">Qualification Certificates (Optional)</h3>
-                  <p className="text-xs text-gray-500">Degree, diploma or matric certificates (PDF, JPG)</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => certInputRef.current?.click()}
-                  className="btn-secondary text-xs flex items-center gap-1 py-1.5 px-3"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Upload Files</span>
-                </button>
-                <input
-                  ref={certInputRef}
-                  type="file"
-                  multiple
-                  className="hidden"
-                  accept=".pdf,.jpg,.png"
-                  onChange={(e) => handleQualificationUpload(e.target.files)}
-                />
+                      Remove
+                    </button>
+                  </div>
+                )}
               </div>
+            )}
+          </div>
 
-              {(docs.qualifications || []).length > 0 && (
-                <div className="space-y-2 pt-2">
-                  {docs.qualifications.map((q) => (
-                    <div key={q.id} className="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl border border-gray-200 text-xs">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-blue-600" />
-                        <span className="font-medium text-gray-800">{q.name}</span>
-                        <span className="text-gray-400">({(q.size / 1024).toFixed(0)} KB)</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeQualification(q.id)}
-                        className="text-gray-400 hover:text-red-600"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* 4. Other Documents */}
-            <div className="p-5 border border-gray-200 rounded-2xl bg-white space-y-3">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="font-semibold text-gray-900 text-sm">Other Documents (Optional)</h3>
-                  <p className="text-xs text-gray-500">Portfolio, reference letters, proof of address (Up to 5 files)</p>
-                </div>
-                <button
-                  type="button"
-                  onClick={() => otherInputRef.current?.click()}
-                  className="btn-secondary text-xs flex items-center gap-1 py-1.5 px-3"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  <span>Add File</span>
-                </button>
-                <input
-                  ref={otherInputRef}
-                  type="file"
-                  multiple
-                  className="hidden"
-                  onChange={(e) => handleOtherUpload(e.target.files)}
-                />
+          {/* 3. Qualifications */}
+          <div className="border border-slate-200 p-4 bg-white space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-900 text-xs uppercase tracking-wider">
+                  Qualification Certificates (Optional)
+                </h3>
+                <p className="text-[11px] text-slate-500">Degree, diploma or technical certificates</p>
               </div>
-
-              {(docs.other || []).length > 0 && (
-                <div className="space-y-2 pt-2">
-                  {docs.other.map((o) => (
-                    <div key={o.id} className="flex items-center justify-between p-2.5 bg-gray-50 rounded-xl border border-gray-200 text-xs">
-                      <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-blue-600" />
-                        <span className="font-medium text-gray-800">{o.name}</span>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => removeOther(o.id)}
-                        className="text-gray-400 hover:text-red-600"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            {/* Back & Next Navigation */}
-            <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => { setStep(1); navigate('/apply/details') }}
-                className="btn-secondary flex items-center gap-2"
+                onClick={() => certInputRef.current?.click()}
+                className="border border-slate-300 hover:bg-slate-50 text-slate-800 text-[11px] font-bold uppercase tracking-wider px-3 py-1.5"
               >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
+                + Attach Certificates
               </button>
-
-              <button
-                type="submit"
-                className="btn-primary flex items-center gap-2"
-              >
-                <span>Next: Screening Questions</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+              <input
+                ref={certInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                accept=".pdf,.jpg,.png"
+                onChange={(e) => handleQualificationUpload(e.target.files)}
+              />
             </div>
-          </form>
-        </div>
+
+            {(docs.qualifications || []).length > 0 && (
+              <div className="space-y-1.5 pt-1">
+                {docs.qualifications.map((q) => (
+                  <div key={q.id} className="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 text-xs">
+                    <div>
+                      <span className="font-medium text-slate-900">{q.name}</span>
+                      <span className="text-slate-400 text-[11px] ml-2">({(q.size / 1024).toFixed(0)} KB)</span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => removeQualification(q.id)}
+                      className="text-xs text-red-700 hover:text-red-900 font-bold px-1"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* 4. Other Documents */}
+          <div className="border border-slate-200 p-4 bg-white space-y-2.5">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-slate-900 text-xs uppercase tracking-wider">
+                  Supplementary Records (Optional)
+                </h3>
+                <p className="text-[11px] text-slate-500">References, license copies, or awards (Up to 5 files)</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => otherInputRef.current?.click()}
+                className="border border-slate-300 hover:bg-slate-50 text-slate-800 text-[11px] font-bold uppercase tracking-wider px-3 py-1.5"
+              >
+                + Add Records
+              </button>
+              <input
+                ref={otherInputRef}
+                type="file"
+                multiple
+                className="hidden"
+                onChange={(e) => handleOtherUpload(e.target.files)}
+              />
+            </div>
+
+            {(docs.other || []).length > 0 && (
+              <div className="space-y-1.5 pt-1">
+                {docs.other.map((o) => (
+                  <div key={o.id} className="flex items-center justify-between p-2 bg-slate-50 border border-slate-200 text-xs">
+                    <span className="font-medium text-slate-900">{o.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeOther(o.id)}
+                      className="text-xs text-red-700 hover:text-red-900 font-bold px-1"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Navigation */}
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => { setStep(1); shuffleNavigate(navigate, '/apply/details', 'backward') }}
+              className="border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 py-2.5 px-5 font-semibold text-xs uppercase tracking-wider rounded-none"
+              style={{ borderRadius: 0 }}
+            >
+              ← Back to Details
+            </button>
+
+            <button
+              type="submit"
+              className="bg-[#0f1b29] hover:bg-[#1a2d42] text-white py-3 px-6 font-semibold text-xs uppercase tracking-wider transition-all duration-150 rounded-none shadow-sm"
+              style={{ borderRadius: 0 }}
+            >
+              Next: Screening Questions →
+            </button>
+          </div>
+        </form>
       </div>
-      <Footer />
-    </div>
+    </PortalLayout>
   )
 }

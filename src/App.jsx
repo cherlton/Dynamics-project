@@ -34,10 +34,12 @@ import AdminPopiaPage from './pages/admin/AdminPopiaPage'
 // Shared & Dev
 import LegalPage from './pages/LegalPage'
 import DevEmailsPage from './pages/dev/DevEmailsPage'
+import ScrollToTop from './components/ScrollToTop'
 
 export default function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Routes>
         {/* Default redirect to LinkedIn application landing */}
         <Route path="/" element={<Navigate to="/apply/account?src=linkedin" replace />} />

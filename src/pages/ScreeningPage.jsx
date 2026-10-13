@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useApplicationStore } from '../store/applicationStore'
-import ProgressBar from '../components/ProgressBar'
-import Footer from '../components/Footer'
-import { HelpCircle, AlertTriangle, ArrowRight, ArrowLeft, CheckCircle2 } from 'lucide-react'
+import { useUiStore } from '../store/uiStore'
+import PortalLayout from '../components/PortalLayout'
 
 export default function ScreeningPage() {
   const navigate = useNavigate()
   const { application, updateScreening, setStep } = useApplicationStore()
+  const shuffleNavigate = useUiStore(s => s.shuffleNavigate)
 
   const [screening, setScreening] = useState(application.screening || {})
   const [error, setError] = useState('')
@@ -25,226 +25,235 @@ export default function ScreeningPage() {
       return
     }
     setStep(4)
-    navigate('/apply/summary')
+    shuffleNavigate(navigate, '/apply/summary', 'forward')
   }
 
   return (
-    <div className="bg-gradient-portal flex flex-col min-h-screen">
-      <div className="flex-1 max-w-card w-full mx-auto p-4 md:py-8">
-        <div className="card-form shadow-xl animate-fade-in">
-          <ProgressBar currentStep={3} />
+    <PortalLayout
+      category="STEP 04 OF 05 — ROLE ALIGNMENT"
+      title="Screening and candidate eligibility evaluation"
+      subtitle="Answer key role alignment, statutory employment eligibility, and availability questions to guide our talent committee."
+      currentStep={3}
+      showProgressBar={true}
+    >
+      <div>
+        <div className="mb-5 pb-3 border-b border-slate-200">
+          <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 block mb-1">
+            Section 04 of 05 — Role Alignment
+          </span>
+          <h2 className="formal-heading-dark text-2xl sm:text-3xl font-semibold">
+            Screening Questions
+          </h2>
+          <p className="text-xs text-slate-500 mt-1">
+            These questions assist our human talent reviewers in evaluating role expectations and logistic parameters.
+          </p>
+        </div>
 
-          <div className="mb-6">
-            <h1 className="text-page-title text-gray-900">Screening Questions</h1>
-            <div className="gray-dash mt-2 mb-2" />
-            <p className="text-gray-600 text-sm">
-              Please answer these role-specific questions to help our hiring committee evaluate your alignment.
-            </p>
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-300 text-xs text-red-800 rounded-none">
+            {error}
+          </div>
+        )}
+
+        <form onSubmit={handleNext} className="space-y-5">
+          {/* Group 1: Eligibility */}
+          <div className="border border-slate-200 p-4 sm:p-5 bg-white space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 pb-2 border-b border-slate-100">
+              1. Statutory Eligibility
+            </h3>
+
+            {/* Legal Entitlement */}
+            <div>
+              <label className="input-label font-bold text-slate-900 mb-2">
+                Are you legally entitled to work in South Africa? *
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="flex items-center gap-2 cursor-pointer p-3 border border-slate-300 hover:border-slate-800 bg-white">
+                  <input
+                    type="radio"
+                    name="legallyEntitled"
+                    value="yes"
+                    checked={screening.legallyEntitled === 'yes'}
+                    onChange={() => handleChange('legallyEntitled', 'yes')}
+                    className="text-[#0f1b29] focus:ring-0"
+                  />
+                  <span className="text-xs font-medium text-slate-800">
+                    Yes (Citizen / PR / Valid Permit)
+                  </span>
+                </label>
+
+                <label className="flex items-center gap-2 cursor-pointer p-3 border border-slate-300 hover:border-slate-800 bg-white">
+                  <input
+                    type="radio"
+                    name="legallyEntitled"
+                    value="no"
+                    checked={screening.legallyEntitled === 'no'}
+                    onChange={() => handleChange('legallyEntitled', 'no')}
+                    className="text-[#0f1b29] focus:ring-0"
+                  />
+                  <span className="text-xs font-medium text-slate-800">
+                    No (Require Sponsorship)
+                  </span>
+                </label>
+              </div>
+
+              {screening.legallyEntitled === 'no' && (
+                <div className="mt-2.5 p-2.5 bg-amber-50 border border-amber-300 text-xs text-amber-900">
+                  <strong>Notice:</strong> This role typically requires South African work authorization. Our talent team evaluates sponsorship availability on a case-by-case basis.
+                </div>
+              )}
+            </div>
+
+            {/* Driver's Licence */}
+            <div className="pt-2 border-t border-slate-100">
+              <label className="input-label font-bold text-slate-900 mb-2">
+                Do you hold a valid South African driver’s licence?
+              </label>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <label className="flex items-center gap-2 cursor-pointer p-3 border border-slate-300 hover:border-slate-800 bg-white">
+                  <input
+                    type="radio"
+                    name="driversLicence"
+                    value="yes"
+                    checked={screening.driversLicence === 'yes'}
+                    onChange={() => handleChange('driversLicence', 'yes')}
+                    className="text-[#0f1b29] focus:ring-0"
+                  />
+                  <span className="text-xs text-slate-800">Yes (Code 8 / B or higher)</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer p-3 border border-slate-300 hover:border-slate-800 bg-white">
+                  <input
+                    type="radio"
+                    name="driversLicence"
+                    value="no"
+                    checked={screening.driversLicence === 'no'}
+                    onChange={() => handleChange('driversLicence', 'no')}
+                    className="text-[#0f1b29] focus:ring-0"
+                  />
+                  <span className="text-xs text-slate-800">No</span>
+                </label>
+              </div>
+            </div>
           </div>
 
-          {error && (
-            <div className="mb-6 p-4 rounded-xl bg-red-50 border border-red-200 text-sm text-red-700">
-              {error}
-            </div>
-          )}
+          {/* Group 2: Availability & Expectations */}
+          <div className="border border-slate-200 p-4 sm:p-5 bg-white space-y-4">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 pb-2 border-b border-slate-100">
+              2. Availability & Compensation
+            </h3>
 
-          <form onSubmit={handleNext} className="space-y-6">
-            {/* Group 1: Eligibility & Compliance (Knock-out questions with gentle advice) */}
-            <div className="border border-gray-200 rounded-2xl p-5 md:p-6 bg-white space-y-4">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">1. Eligibility</span>
-
-              {/* Legal entitlement question */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               <div>
-                <label className="input-label font-semibold text-gray-900">
-                  Are you legally entitled to work in South Africa? <span className="text-danger">*</span>
+                <label className="input-label font-bold text-slate-900" htmlFor="noticePeriod">
+                  Notice Period *
                 </label>
-                <div className="flex gap-4 mt-2">
-                  <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-xl hover:bg-gray-50 flex-1">
-                    <input
-                      type="radio"
-                      name="legallyEntitled"
-                      value="yes"
-                      checked={screening.legallyEntitled === 'yes'}
-                      onChange={() => handleChange('legallyEntitled', 'yes')}
-                      className="text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm font-medium text-gray-800">Yes (Citizen / PR / Valid Permit)</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-xl hover:bg-gray-50 flex-1">
-                    <input
-                      type="radio"
-                      name="legallyEntitled"
-                      value="no"
-                      checked={screening.legallyEntitled === 'no'}
-                      onChange={() => handleChange('legallyEntitled', 'no')}
-                      className="text-blue-600 focus:ring-blue-500"
-                    />
-                    <span className="text-sm font-medium text-gray-800">No (Require sponsorship)</span>
-                  </label>
-                </div>
-
-                {screening.legallyEntitled === 'no' && (
-                  <div className="mt-2.5 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-2.5 text-xs text-amber-800 animate-slide-up">
-                    <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
-                    <div>
-                      <strong>Note:</strong> This role normally requires existing work entitlement in South Africa. Our talent team will review any international applications manually without automated disqualification.
-                    </div>
-                  </div>
-                )}
+                <select
+                  id="noticePeriod"
+                  value={screening.noticePeriod || ''}
+                  onChange={e => handleChange('noticePeriod', e.target.value)}
+                  required
+                  className="input-field bg-white"
+                >
+                  <option value="">Select notice period</option>
+                  <option value="Immediate">Immediate / Available now</option>
+                  <option value="2 Weeks">Calendar 2 Weeks</option>
+                  <option value="1 Month">1 Calendar Month</option>
+                  <option value="2 Months">2 Months</option>
+                  <option value="3 Months">3 Months</option>
+                </select>
               </div>
 
-              {/* Driver's Licence question */}
-              <div className="pt-3 border-t border-gray-100">
-                <label className="input-label font-semibold text-gray-900">
-                  Do you hold a valid South African driver’s licence?
+              <div>
+                <label className="input-label font-bold text-slate-900" htmlFor="availabilityDate">
+                  Earliest Start Date
                 </label>
-                <div className="flex gap-4 mt-2">
-                  <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-xl hover:bg-gray-50 flex-1">
-                    <input
-                      type="radio"
-                      name="driversLicence"
-                      value="yes"
-                      checked={screening.driversLicence === 'yes'}
-                      onChange={() => handleChange('driversLicence', 'yes')}
-                      className="text-blue-600"
-                    />
-                    <span className="text-sm text-gray-800">Yes (Code 8 / B or higher)</span>
-                  </label>
-                  <label className="flex items-center gap-2 cursor-pointer p-3 border rounded-xl hover:bg-gray-50 flex-1">
-                    <input
-                      type="radio"
-                      name="driversLicence"
-                      value="no"
-                      checked={screening.driversLicence === 'no'}
-                      onChange={() => handleChange('driversLicence', 'no')}
-                      className="text-blue-600"
-                    />
-                    <span className="text-sm text-gray-800">No</span>
-                  </label>
-                </div>
+                <input
+                  id="availabilityDate"
+                  type="date"
+                  value={screening.availabilityDate || ''}
+                  onChange={e => handleChange('availabilityDate', e.target.value)}
+                  className="input-field"
+                />
+              </div>
+
+              <div>
+                <label className="input-label font-bold text-slate-900" htmlFor="salaryExpectation">
+                  Monthly Salary Expectation (ZAR, Gross)
+                </label>
+                <input
+                  id="salaryExpectation"
+                  type="text"
+                  placeholder="e.g. 65,000"
+                  value={screening.salaryExpectation || ''}
+                  onChange={e => handleChange('salaryExpectation', e.target.value)}
+                  className="input-field"
+                />
+              </div>
+
+              <div>
+                <label className="input-label font-bold text-slate-900" htmlFor="workMode">
+                  Preferred Work Arrangement
+                </label>
+                <select
+                  id="workMode"
+                  value={screening.workMode || ''}
+                  onChange={e => handleChange('workMode', e.target.value)}
+                  className="input-field bg-white"
+                >
+                  <option value="">Select arrangement</option>
+                  <option value="Hybrid">Hybrid (2-3 days office)</option>
+                  <option value="Remote">Fully Remote</option>
+                  <option value="On-site">On-site (Johannesburg headquarters)</option>
+                </select>
               </div>
             </div>
+          </div>
 
-            {/* Group 2: Availability & Experience */}
-            <div className="border border-gray-200 rounded-2xl p-5 md:p-6 bg-white space-y-4">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">2. Availability & Logistics</span>
+          {/* Group 3: Motivation Statement */}
+          <div className="border border-slate-200 p-4 sm:p-5 bg-white space-y-2">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-900 pb-2 border-b border-slate-100">
+              3. Professional Statement
+            </h3>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="input-label font-semibold text-gray-900" htmlFor="noticePeriod">
-                    Notice Period <span className="text-danger">*</span>
-                  </label>
-                  <select
-                    id="noticePeriod"
-                    value={screening.noticePeriod || ''}
-                    onChange={e => handleChange('noticePeriod', e.target.value)}
-                    required
-                    className="input-field bg-white"
-                  >
-                    <option value="">Select notice period</option>
-                    <option value="Immediate">Immediate / Available now</option>
-                    <option value="2 Weeks">Calendar 2 Weeks</option>
-                    <option value="1 Month">1 Calendar Month</option>
-                    <option value="2 Months">2 Months</option>
-                    <option value="3 Months">3 Months</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="input-label font-semibold text-gray-900" htmlFor="availabilityDate">
-                    Earliest Start Date
-                  </label>
-                  <input
-                    id="availabilityDate"
-                    type="date"
-                    value={screening.availabilityDate || ''}
-                    onChange={e => handleChange('availabilityDate', e.target.value)}
-                    className="input-field"
-                  />
-                </div>
-
-                <div>
-                  <label className="input-label font-semibold text-gray-900" htmlFor="salaryExpectation">
-                    Monthly Salary Expectation (ZAR, Gross)
-                  </label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 font-semibold text-sm">R</span>
-                    <input
-                      id="salaryExpectation"
-                      type="text"
-                      placeholder="e.g. 65,000"
-                      value={screening.salaryExpectation || ''}
-                      onChange={e => handleChange('salaryExpectation', e.target.value)}
-                      className="input-field pl-8"
-                    />
-                  </div>
-                  <span className="text-[11px] text-gray-400 block mt-1">Optional, assists with role bracket alignment</span>
-                </div>
-
-                <div>
-                  <label className="input-label font-semibold text-gray-900" htmlFor="workMode">
-                    Preferred Work Arrangement
-                  </label>
-                  <select
-                    id="workMode"
-                    value={screening.workMode || ''}
-                    onChange={e => handleChange('workMode', e.target.value)}
-                    className="input-field bg-white"
-                  >
-                    <option value="">Select work mode</option>
-                    <option value="Hybrid">Hybrid (2-3 days office)</option>
-                    <option value="Remote">Fully Remote</option>
-                    <option value="On-site">On-site (Johannesburg office)</option>
-                  </select>
-                </div>
-              </div>
+            <label className="input-label" htmlFor="whyWorkHere">
+              Why are you interested in joining Gaspar?
+            </label>
+            <textarea
+              id="whyWorkHere"
+              rows={3}
+              maxLength={800}
+              value={screening.whyWorkHere || ''}
+              onChange={e => handleChange('whyWorkHere', e.target.value)}
+              placeholder="Outline your professional experience and how your skill profile aligns with this position..."
+              className="input-field text-xs py-2"
+            />
+            <div className="flex justify-between items-center text-[10px] text-slate-400">
+              <span>Maximum 800 characters</span>
+              <span>{(screening.whyWorkHere || '').length} / 800</span>
             </div>
+          </div>
 
-            {/* Group 3: Motivation Statement */}
-            <div className="border border-gray-200 rounded-2xl p-5 md:p-6 bg-white space-y-2">
-              <span className="text-xs font-bold text-gray-400 uppercase tracking-wider block">3. Statement of Motivation</span>
+          {/* Navigation */}
+          <div className="pt-4 border-t border-slate-200 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => { setStep(2); shuffleNavigate(navigate, '/apply/documents', 'backward') }}
+              className="border border-slate-300 bg-white hover:bg-slate-50 text-slate-800 py-2.5 px-5 font-semibold text-xs uppercase tracking-wider rounded-none"
+              style={{ borderRadius: 0 }}
+            >
+              ← Back to Documents
+            </button>
 
-              <label className="input-label font-semibold text-gray-900" htmlFor="whyWorkHere">
-                Why are you interested in this position?
-              </label>
-              <textarea
-                id="whyWorkHere"
-                rows={4}
-                maxLength={800}
-                value={screening.whyWorkHere || ''}
-                onChange={e => handleChange('whyWorkHere', e.target.value)}
-                placeholder="Share what excites you about this role and how your strengths align..."
-                className="input-field text-sm"
-              />
-              <div className="flex justify-between items-center text-[11px] text-gray-400">
-                <span>Maximum 800 characters</span>
-                <span>{(screening.whyWorkHere || '').length} / 800</span>
-              </div>
-            </div>
-
-            {/* Back & Next Navigation */}
-            <div className="pt-6 border-t border-gray-100 flex items-center justify-between">
-              <button
-                type="button"
-                onClick={() => { setStep(2); navigate('/apply/documents') }}
-                className="btn-secondary flex items-center gap-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back</span>
-              </button>
-
-              <button
-                type="submit"
-                className="btn-primary flex items-center gap-2"
-              >
-                <span>Next: Review & Submit</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </form>
-        </div>
+            <button
+              type="submit"
+              className="bg-[#0f1b29] hover:bg-[#1a2d42] text-white py-3 px-6 font-semibold text-xs uppercase tracking-wider transition-all duration-150 rounded-none shadow-sm"
+              style={{ borderRadius: 0 }}
+            >
+              Next: Review & Submit →
+            </button>
+          </div>
+        </form>
       </div>
-      <Footer />
-    </div>
+    </PortalLayout>
   )
 }

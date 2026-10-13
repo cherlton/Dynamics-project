@@ -1,5 +1,3 @@
-import { X } from 'lucide-react'
-
 export default function Modal({ isOpen, onClose, title, children, size = 'md' }) {
   if (!isOpen) return null
 
@@ -12,18 +10,23 @@ export default function Modal({ isOpen, onClose, title, children, size = 'md' })
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
-      <div className={`relative bg-white rounded-2xl shadow-2xl ${sizes[size]} w-full max-h-[90vh] overflow-y-auto animate-slide-up`}>
-        <div className="sticky top-0 bg-white flex items-center justify-between px-6 py-4 border-b border-gray-100 rounded-t-2xl z-10">
-          <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
+      <div className="absolute inset-0 bg-[#0f1b29]/70 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className={`relative bg-white border border-slate-300 shadow-2xl ${sizes[size]} w-full max-h-[90vh] overflow-y-auto animate-fade-in rounded-none`}
+        style={{ borderRadius: 0 }}
+      >
+        <div className="sticky top-0 bg-white flex items-center justify-between px-6 py-4 border-b border-slate-200 z-10">
+          <h2 className="formal-heading-dark text-lg font-semibold">{title}</h2>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
+            className="w-8 h-8 flex items-center justify-center text-slate-500 hover:text-slate-900 border border-slate-200 hover:border-slate-400 transition-colors rounded-none"
+            style={{ borderRadius: 0 }}
+            aria-label="Close modal"
           >
-            <X className="w-5 h-5 text-gray-500" />
+            ✕
           </button>
         </div>
-        <div className="px-6 py-4">
+        <div className="px-6 py-5">
           {children}
         </div>
       </div>
